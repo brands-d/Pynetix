@@ -1,24 +1,24 @@
-
-from importlib import import_module
 from logging import getLogger, DEBUG
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStatusBar
-
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QSettings
+from enzym.mainwindow import MainWindow
+from enzym import __project__, __organization__, __directory__
 from enzym.other.logging import StatusBarHandler, ColoredStatusBarFormatter
 
 
 class App(QApplication):
 
     def __init__(self, argv=[]) -> None:
-
         super().__init__(argv)
 
-        colour = 'test'  # should be read from config
-        try:
-            self.colour = import_module(f'colorschemes.{colour}').Colour
-        except:
-            raise ValueError(
-                f'Colour scheme {colour} not found. Check config files for spelling.')
+        self.setApplicationName(__project__)
+        self.setOrganizationName(__organization__)
+
+        self.verify_settings()
+
+        self.mainwindow = None
+        self.statusBar = None
 
         self._init_mainwindow()
         self._init_logging()
@@ -28,16 +28,22 @@ class App(QApplication):
         getLogger('enzym').info('Initialization finished.')
 
     def _init_mainwindow(self) -> None:
-        self.mainwindow = QMainWindow()
-        self.statusBar = QStatusBar()
-        self.mainwindow.setStatusBar(self.statusBar)
-
-    def run(self) -> int:
-        return super().exec()
+        self.mainwindow = MainWindow()
 
     def _init_logging(self) -> None:
         log = getLogger('enzym')
         log.setLevel(DEBUG)
         handler = StatusBarHandler(self.mainwindow.statusBar())
-        handler.setFormatter(ColoredStatusBarFormatter(self.colour))
+        handler.setFormatter(ColoredStatusBarFormatter())
         log.addHandler(handler)
+
+    def verify_settings(self) -> None:
+        settings = QSettings()
+        defaults = QSettings(str(__directory__ / '..' / 'default_settings.ini'),
+                             QSettings.Format.IniFormat)
+        defaults.setFallbacksEnabled(False)
+
+        # this way new settings can be introduced easily
+        for key in defaults.allKeys():
+            if not settings.contains(key):
+                settings.setValue(key, defaults.value(key))

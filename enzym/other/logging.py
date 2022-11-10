@@ -1,6 +1,8 @@
 from datetime import datetime
 from logging import Handler, Formatter
 
+from PyQt6.QtCore import QSettings
+
 
 class StatusBarHandler(Handler):
 
@@ -17,9 +19,7 @@ class StatusBarHandler(Handler):
 
 class ColoredStatusBarFormatter(Formatter):
 
-    def __init__(self, colour):
-
-        self.colour = colour
+    def __init__(self):
         super().__init__()
 
     def format(self, record):
@@ -28,12 +28,12 @@ class ColoredStatusBarFormatter(Formatter):
         message = f'{time}    {record.msg}'
 
         if record.levelname == 'ERROR':
-            style = f'color: {self.colour.RED.value}; font-weight: bold'
+            style = f'color: {QSettings().value("colour/red")}; font-weight: bold'
 
         elif record.levelname == 'WARNING':
-            style = f'color: {self.colour.ORANGE.value}'
+            style = f'color: {QSettings().value("colour/orange")}'
 
         else:
-            style = f'color: {self.colour.WHITE.value}'
+            style = f'color: {QSettings().value("colour/white")}'
 
         return style, message
