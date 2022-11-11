@@ -10,8 +10,7 @@ class StatusBarHandler(Handler):
         self.statusbar = statusbar
         super().__init__(*args)
 
-    def emit(self, record):
-
+    def emit(self, record) -> None:
         style, message = self.format(record)
         self.statusbar.setStyleSheet(style)
         self.statusbar.showMessage(message)
@@ -19,10 +18,10 @@ class StatusBarHandler(Handler):
 
 class ColoredStatusBarFormatter(Formatter):
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def format(self, record):
+    def format(self, record) -> None:
         time = datetime.now().strftime('%H:%M:%S')
         message = f'{time}    {record.msg}'
 
