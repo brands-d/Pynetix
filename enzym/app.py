@@ -3,9 +3,10 @@ from logging import getLogger, DEBUG
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QSettings
 from enzym.mainwindow import MainWindow
+
 from enzym import __project__, __organization__, __directory__
 from enzym.other.logging import StatusBarHandler, ColoredStatusBarFormatter
-
+from enzym.other.colours import Colour
 
 class App(QApplication):
 
@@ -15,11 +16,11 @@ class App(QApplication):
         self.setApplicationName(__project__)
         self.setOrganizationName(__organization__)
 
+        self.mainwindow = None
+
         self.verify_settings()
 
-        self.mainwindow = None
-        self.statusBar = None
-
+        Colour.update_colour_scheme(QSettings().value('colours/theme'))
         self._init_mainwindow()
         self._init_logging()
 
@@ -36,6 +37,9 @@ class App(QApplication):
         handler = StatusBarHandler(self.mainwindow.statusBar())
         handler.setFormatter(ColoredStatusBarFormatter())
         log.addHandler(handler)
+
+    def update_colours(self) -> None:
+        pass
 
     def verify_settings(self) -> None:
         settings = QSettings()
