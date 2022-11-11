@@ -11,9 +11,12 @@ class StatusBarHandler(Handler):
         super().__init__(*args)
 
     def emit(self, record) -> None:
+
+        duration = record.args[0] if record.args else 0
         style, message = self.format(record)
+
         self.statusbar.setStyleSheet(style)
-        self.statusbar.showMessage(message)
+        self.statusbar.showMessage(message, duration)
 
 
 class ColoredStatusBarFormatter(Formatter):

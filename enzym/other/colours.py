@@ -1,6 +1,6 @@
 import json
 
-from enzym import __directory__
+from enzym import __resources__
 
 
 class Colourscheme:
@@ -12,7 +12,7 @@ class Colourscheme:
     @staticmethod
     def update_colour_scheme(theme: str) -> None:
         try:
-            with open(__directory__ / '..' / 'colourschemes' / f'{theme}.json') as f:
+            with open(__resources__ / 'colourschemes' / f'{theme}.json') as f:
                 Colourscheme._colour = json.load(f)
         except FileNotFoundError:
             print(

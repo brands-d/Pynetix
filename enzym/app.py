@@ -5,8 +5,8 @@ from PyQt6.QtCore import QSettings
 from enzym.mainwindow import MainWindow
 
 from enzym.other.colours import Colour
-from enzym.stylesheets.stylesheet import Style
-from enzym import __project__, __organization__, __directory__
+from enzym.other.stylesheet import Style
+from enzym import __project__, __organization__, __resources__
 from enzym.other.logging import StatusBarHandler, ColoredStatusBarFormatter
 
 
@@ -45,7 +45,7 @@ class App(QApplication):
 
     def verify_settings(self) -> None:
         settings = QSettings()
-        defaults = QSettings(str(__directory__ / '..' / 'default_settings.ini'),
+        defaults = QSettings(str(__resources__  / 'default_settings.ini'),
                              QSettings.Format.IniFormat)
         defaults.setFallbacksEnabled(False)
 
