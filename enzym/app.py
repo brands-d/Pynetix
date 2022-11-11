@@ -45,7 +45,7 @@ class App(QApplication):
 
     def verify_settings(self) -> None:
         settings = QSettings()
-        defaults = QSettings(str(__resources__  / 'default_settings.ini'),
+        defaults = QSettings(str(__resources__ / 'default_settings.ini'),
                              QSettings.Format.IniFormat)
         defaults.setFallbacksEnabled(False)
 

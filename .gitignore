@@ -135,3 +135,6 @@ report.tar.gz
 
 # User Settings
 *_user*
+
+# IDE
+.vscode
