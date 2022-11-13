@@ -4,14 +4,14 @@ from PyQt6.QtCore import QObject, QThread, pyqtSignal
 class BasicWorker(QObject):
     finished = pyqtSignal()
 
-    def __init__(self, f, *args, thread=None, caller=None, **kwargs) -> None:
+    def __init__(self, f, *args, thread=None, anchor=None, **kwargs) -> None:
         super().__init__()
 
         self.f = f
         self.args = args
         self.kwargs = kwargs
-        if thread is None and caller is not None:
-            self.thread = QThread(parent=caller)
+        if thread is None and anchor is not None:
+            self.thread = QThread(parent=anchor)
         elif thread is not None:
             self.thread = thread
         else:

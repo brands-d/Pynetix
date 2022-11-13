@@ -35,7 +35,8 @@ class App(QApplication):
         self.mainwindow.show()
         getLogger('pynetix').info('Initialization finished.')
 
-        self.check_for_updates()
+        worker = BasicWorker(self.check_for_updates, anchor=self)
+        worker.start()
 
     def _init_mainwindow(self) -> None:
         self.mainwindow = MainWindow()
@@ -65,28 +66,25 @@ class App(QApplication):
         self.setStyleSheet(Style.get_style('application'))
 
     def check_for_updates(self) -> None:
-        def f():
-            if str_to_bool(QSettings().value('remote/check_update')):
-                getLogger('pynetix').info('Checking for updates...')
-                try:
-                    from urllib import request
-                    from re import search
-                    url = 'https://raw.githubusercontent.com/brands-d/' + \
-                        __project__+'/main/'+__project__.lower()+'/__init__.py'
-                    for line in request.urlopen(url):
-                        line = line.decode('utf-8')
-                        #print('1')
-                        if '__version__' in line:
-                            newest_version = search(
-                                "= *'(.*)' *$", line).group(1)
-                            if newest_version != __version__:
-                                getLogger('pynetix').warning(
-                                    'Newer version available.')
-                            else:
-                                getLogger('pynetix').info(
-                                    "You\'re up to date.")
-                except Exception:
-                    getLogger('pynetix').warning(
-                        'Checking for updates failed.')
-        worker = BasicWorker(f, caller=self)
-        worker.start()
+        if str_to_bool(QSettings().value('remote/check_update')):
+            getLogger('pynetix').info('Checking for updates...')
+            try:
+                from urllib import request
+                from re import search
+                url = 'https://raw.githubusercontent.com/brands-d/' + \
+                    __project__+'/main/'+__project__.lower()+'/__init__.py'
+                for line in request.urlopen(url):
+                    line = line.decode('utf-8')
+                    # print('1')
+                    if '__version__' in line:
+                        newest_version = search(
+                            "= *'(.*)' *$", line).group(1)
+                        if newest_version != __version__:
+                            getLogger('pynetix').warning(
+                                'Newer version available.')
+                        else:
+                            getLogger('pynetix').info(
+                                "You\'re up to date.")
+            except Exception:
+                getLogger('pynetix').warning(
+                    'Checking for updates failed.')
