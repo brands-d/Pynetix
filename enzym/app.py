@@ -6,7 +6,9 @@ from enzym.mainwindow import MainWindow
 
 from enzym.other.colours import Colour
 from enzym.other.stylesheet import Style
-from enzym import __project__, __organization__, __resources__
+from enzym.other.worker import BasicWorker
+from enzym import (__project__, __organization__,
+                   __resources__, __remote__, __version__)
 from enzym.other.logging import StatusBarHandler, ColoredStatusBarFormatter
 
 
@@ -32,6 +34,8 @@ class App(QApplication):
         # finalizations
         self.mainwindow.show()
         getLogger('enzym').info('Initialization finished.')
+
+        self.check_for_updates()
 
     def _init_mainwindow(self) -> None:
         self.mainwindow = MainWindow()
@@ -59,3 +63,26 @@ class App(QApplication):
 
     def update_style(self) -> None:
         self.setStyleSheet(Style.get_style('application'))
+
+    def check_for_updates(self) -> None:
+        # def f():
+        #   print('x')
+        if QSettings().value('remote/check_update'):
+            getLogger('enzym').info('Checking for updates...')
+            try:
+                from urllib import request
+                from re import search
+                url = 'https://raw.githubusercontent.com/brands-d/Enzym/main/enzym/__init__.py'
+                for line in request.urlopen(url):
+                    line = line.decode('utf-8')
+                    if '__version__' in line:
+                        newest_version = search("= *'(.*)' *$", line).group(1)
+                        if newest_version != __version__:
+                            getLogger('enzym').warning(
+                                'Newer version available.')
+                        else:
+                            getLogger('enzym').info("You\'re up to date.")
+            except Exception:
+                getLogger('enzym').warning('Checking for updates failed.')
+        #worker = BasicWorker(f, caller=self)
+        # worker.start()
