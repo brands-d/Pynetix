@@ -1,15 +1,15 @@
-from logging import getLogger, DEBUG
+from logging import DEBUG, getLogger
 
-from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QSettings
+from PyQt6.QtWidgets import QApplication
 
+from pynetix import __project__, __resources__, __version__
+from pynetix.mainwindow import MainWindow
 from pynetix.other.colours import Colour
 from pynetix.other.lib import str_to_bool
-from pynetix.mainwindow import MainWindow
+from pynetix.other.logging import ColoredStatusBarFormatter, StatusBarHandler
 from pynetix.other.stylesheet import Style
-from pynetix.other.worker import BasicWorker
-from pynetix import (__project__, __resources__, __version__)
-from pynetix.other.logging import StatusBarHandler, ColoredStatusBarFormatter
+from pynetix.other.worker import Task
 
 
 class App(QApplication):
@@ -35,15 +35,15 @@ class App(QApplication):
 
         # finalizations
         self.mainwindow.show()
-        getLogger('pynetix').info('Initialization finished.')
-        task = BasicWorker(self.check_for_updates)
-        task.start()
+        getLogger(__project__).info('Initialization finished.')
+
+        self.check_for_updates()
 
     def _init_mainwindow(self) -> None:
         self.mainwindow = MainWindow()
 
     def _init_logging(self) -> None:
-        log = getLogger('pynetix')
+        log = getLogger(__project__)
         log.setLevel(DEBUG)
         handler = StatusBarHandler(self.mainwindow.statusBar())
         handler.setFormatter(ColoredStatusBarFormatter())
@@ -68,25 +68,42 @@ class App(QApplication):
 
     def check_for_updates(self) -> None:
         if str_to_bool(QSettings().value('remote/check_update')):
-            getLogger('pynetix').info('Checking for updates...')
-            try:
-                from urllib import request
-                from re import search
-                url = 'https://raw.githubusercontent.com/brands-d/' + \
-                    __project__+'/main/'+__project__.lower()+'/__init__.py'
-                for line in request.urlopen(url):
-                    line = line.decode('utf-8')
-                    if '__version__' in line:
-                        newest_version = search(
-                            "= *'(.*)' *$", line).group(1)
-                        if newest_version != __version__:
-                            getLogger('pynetix').warning(
-                                'Newer version available.')
-                        else:
-                            getLogger('pynetix').info(
-                                "You\'re up to date.")
-            except Exception:
-                getLogger('pynetix').warning('Checking for updates failed.')
+            getLogger(__project__).info('Checking for updates...')
+            from re import search
+            from urllib import request
+
+            def f():
+                try:
+                    url = 'https://raw.githubusercontent.com/brands-d/' + \
+                        __project__+'/main/'+__project__.lower()+'/__init__.py'
+                    for line in request.urlopen(url):
+                        line = line.decode('utf-8')
+                        if '__version__' in line:
+                            newest_version = search(
+                                "= *'(.*)' *$", line).group(1)
+                            if newest_version != __version__:
+                                return 1
+                            else:
+                                return 0
+                except Exception:
+                    return -1
+
+            task = Task(f)
+            task.finished.connect(self._handle_update_results)
+            # self.add_task(task)
+            task.start()
+
+    def _handle_update_results(self):
+        task = self.sender()
+        result = task.result
+        task.quit()
+
+        if result == 0:
+            getLogger(__project__).info("You\'re up to date.")
+        elif result == 1:
+            getLogger(__project__).warning('Newer version available.')
+        else:
+            getLogger(__project__).warning('Checking for updates failed.')
 
     def add_task(self, task):
         self.tasks.append(task)

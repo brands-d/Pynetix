@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
-from pynetix import __project__, __version__, __remote__, __description__
+from pynetix import __project__, __version__, __remote__, __description__, __license__
 
-setup(name='pynetix',
+setup(name=__project__,
       version=__version__,
       description=__description__,
       packages=find_packages(),
-      license='GPLv3',
+      license=__license__,
       url=__remote__,
       author='Dominik Brandstetter',
       author_email='brandstetter.dominik@gmx.net',
