@@ -6,7 +6,7 @@ from enzym.mainwindow import MainWindow
 
 from enzym.other.colours import Colour
 from enzym.other.stylesheet import Style
-from enzym.other.worker import BasicWorker
+#from enzym.other.worker import BasicWorker
 from enzym import (__project__, __organization__,
                    __resources__, __remote__, __version__)
 from enzym.other.logging import StatusBarHandler, ColoredStatusBarFormatter
