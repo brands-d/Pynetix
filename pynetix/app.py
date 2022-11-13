@@ -8,7 +8,7 @@ from pynetix.other.lib import str_to_bool
 from pynetix.mainwindow import MainWindow
 from pynetix.other.stylesheet import Style
 from pynetix.other.worker import BasicWorker
-from pynetix import (__project__, __resources__, __remote__, __version__)
+from pynetix import (__project__, __resources__, __version__)
 from pynetix.other.logging import StatusBarHandler, ColoredStatusBarFormatter
 
 
@@ -16,6 +16,8 @@ class App(QApplication):
 
     def __init__(self, argv=[]) -> None:
         super().__init__(argv)
+
+        self.tasks = []
 
         # settings
         self.setApplicationName(__project__)
@@ -34,9 +36,8 @@ class App(QApplication):
         # finalizations
         self.mainwindow.show()
         getLogger('pynetix').info('Initialization finished.')
-
-        worker = BasicWorker(self.check_for_updates, anchor=self)
-        worker.start()
+        task = BasicWorker(self.check_for_updates)
+        task.start()
 
     def _init_mainwindow(self) -> None:
         self.mainwindow = MainWindow()
@@ -75,7 +76,6 @@ class App(QApplication):
                     __project__+'/main/'+__project__.lower()+'/__init__.py'
                 for line in request.urlopen(url):
                     line = line.decode('utf-8')
-                    # print('1')
                     if '__version__' in line:
                         newest_version = search(
                             "= *'(.*)' *$", line).group(1)
@@ -88,3 +88,9 @@ class App(QApplication):
             except Exception:
                 getLogger('pynetix').warning(
                     'Checking for updates failed.')
+
+    def add_task(self, task):
+        self.tasks.append(task)
+
+    def remove_task(self, task):
+        self.tasks.remove(task)
