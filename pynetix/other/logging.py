@@ -1,7 +1,7 @@
 from datetime import datetime
 from logging import Handler, Formatter
 
-from enzym.other.colours import Colour
+from pynetix.other.colours import Colour
 
 
 class StatusBarHandler(Handler):

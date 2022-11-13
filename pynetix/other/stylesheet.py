@@ -1,5 +1,5 @@
-from enzym import __resources__
-from enzym.other.colours import Colour
+from pynetix import __resources__
+from pynetix.other.colours import Colour
 
 
 class Style:

@@ -2,14 +2,14 @@ from logging import getLogger, DEBUG
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QSettings
-from enzym.mainwindow import MainWindow
+from pynetix.mainwindow import MainWindow
 
-from enzym.other.colours import Colour
-from enzym.other.stylesheet import Style
-#from enzym.other.worker import BasicWorker
-from enzym import (__project__, __organization__,
+from pynetix.other.colours import Colour
+from pynetix.other.stylesheet import Style
+#from pynetix.other.worker import BasicWorker
+from pynetix import (__project__, __organization__,
                    __resources__, __remote__, __version__)
-from enzym.other.logging import StatusBarHandler, ColoredStatusBarFormatter
+from pynetix.other.logging import StatusBarHandler, ColoredStatusBarFormatter
 
 
 class App(QApplication):
@@ -33,7 +33,7 @@ class App(QApplication):
 
         # finalizations
         self.mainwindow.show()
-        getLogger('enzym').info('Initialization finished.')
+        getLogger('pynetix').info('Initialization finished.')
 
         self.check_for_updates()
 
@@ -41,7 +41,7 @@ class App(QApplication):
         self.mainwindow = MainWindow()
 
     def _init_logging(self) -> None:
-        log = getLogger('enzym')
+        log = getLogger('pynetix')
         log.setLevel(DEBUG)
         handler = StatusBarHandler(self.mainwindow.statusBar())
         handler.setFormatter(ColoredStatusBarFormatter())
@@ -67,22 +67,22 @@ class App(QApplication):
     def check_for_updates(self) -> None:
         # def f():
         #   print('x')
-        if QSettings().value('remote/check_update'):
-            getLogger('enzym').info('Checking for updates...')
+        if QSettings().value('remote/check_update') == 'true':
+            getLogger('pynetix').info('Checking for updates...')
             try:
                 from urllib import request
                 from re import search
-                url = 'https://raw.githubusercontent.com/brands-d/Enzym/main/enzym/__init__.py'
+                url = 'https://raw.githubusercontent.com/brands-d/Pynetix/main/pynetix/__init__.py'
                 for line in request.urlopen(url):
                     line = line.decode('utf-8')
                     if '__version__' in line:
                         newest_version = search("= *'(.*)' *$", line).group(1)
                         if newest_version != __version__:
-                            getLogger('enzym').warning(
+                            getLogger('pynetix').warning(
                                 'Newer version available.')
                         else:
-                            getLogger('enzym').info("You\'re up to date.")
+                            getLogger('pynetix').info("You\'re up to date.")
             except Exception:
-                getLogger('enzym').warning('Checking for updates failed.')
+                getLogger('pynetix').warning('Checking for updates failed.')
         #worker = BasicWorker(f, caller=self)
         # worker.start()

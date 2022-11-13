@@ -1,6 +1,6 @@
 import json
 
-from enzym import __resources__
+from pynetix import __resources__
 
 
 class Colourscheme:

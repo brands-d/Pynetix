@@ -1,10 +1,10 @@
 from setuptools import setup
-from enzym import __version__, __remote__
+from pynetix import __project__, __version__, __remote__
 
-setup(name='enzym',
+setup(name=__project__,
       version=__version__,
       description='Something something organic chemistry.',
-      packages=('enzym', ),
+      packages=(__project__.lower(), ),
       license='GPLv3',
       url=__remote__,
       author='Dominik Brandstetter',
