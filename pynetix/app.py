@@ -18,7 +18,7 @@ class App(QApplication):
 
         # settings
         self.setApplicationName(__project__)
-        # self.setOrganizationName(__organization__)
+        self.setOrganizationName(__project__)
         self.verify_settings()
         self.update_colours()
         self.update_style()
