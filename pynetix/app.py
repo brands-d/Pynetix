@@ -86,8 +86,7 @@ class App(QApplication):
                             getLogger('pynetix').info(
                                 "You\'re up to date.")
             except Exception:
-                getLogger('pynetix').warning(
-                    'Checking for updates failed.')
+                getLogger('pynetix').warning('Checking for updates failed.')
 
     def add_task(self, task):
         self.tasks.append(task)

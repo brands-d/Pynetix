@@ -1,10 +1,10 @@
-from setuptools import setup
-from pynetix import __project__, __version__, __remote__
+from setuptools import setup, find_packages
+from pynetix import __project__, __version__, __remote__, __description__
 
-setup(name=__project__,
+setup(name='pynetix',
       version=__version__,
-      description='Something something organic chemistry.',
-      packages=(__project__.lower(), ),
+      description=__description__,
+      packages=find_packages(),
       license='GPLv3',
       url=__remote__,
       author='Dominik Brandstetter',
