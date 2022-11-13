@@ -7,8 +7,7 @@ from pynetix.mainwindow import MainWindow
 from pynetix.other.colours import Colour
 from pynetix.other.stylesheet import Style
 #from pynetix.other.worker import BasicWorker
-from pynetix import (__project__, __organization__,
-                   __resources__, __remote__, __version__)
+from pynetix import (__project__, __resources__, __remote__, __version__)
 from pynetix.other.logging import StatusBarHandler, ColoredStatusBarFormatter
 
 
@@ -19,7 +18,7 @@ class App(QApplication):
 
         # settings
         self.setApplicationName(__project__)
-        self.setOrganizationName(__organization__)
+        # self.setOrganizationName(__organization__)
         self.verify_settings()
         self.update_colours()
         self.update_style()
