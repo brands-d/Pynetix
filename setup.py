@@ -1,12 +1,12 @@
-from setuptools import setup, find_packages
-from enzym import __version__
+from setuptools import setup
+from enzym import __version__, __remote__
 
 setup(name='enzym',
       version=__version__,
       description='Something something organic chemistry.',
-      packages=('src', ),
+      packages=('enzym', ),
       license='GPLv3',
-      url='https://github.com/brands-d/Enzym',
+      url=__remote__,
       author='Dominik Brandstetter',
       author_email='brandstetter.dominik@gmx.net',
       install_requires=('PyQt6>=6.4.0', 'numpy>=1.23.4', 'pyqtgraph>=0.13.1'),
