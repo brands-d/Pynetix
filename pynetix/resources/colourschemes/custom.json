@@ -1,7 +1,8 @@
 {
     "RED": "#ff0000",
     "ORANGE": "#fe8019",
-    "BLACK": "#282828",
+    "BLACK": "#262526",
     "WHITE": "#ffffff",
-    "BLUE": "#3478c6"
+    "BLUE": "#3478c6",
+    "GRAY": "#383838"
 }
