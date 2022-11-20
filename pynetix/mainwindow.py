@@ -16,26 +16,17 @@ class MainWindow(QMainWindow):
         self.tabwidget = None
         self.layout = None
 
-        self.read_settings()
-
         self._init_layout()
         self._init_central_widget()
         self._init_statusbar()
         self._init_tabwidget()
 
+        self.read_settings()
+
     def read_settings(self) -> None:
         settings = QSettings()
         self.move(settings.value('mainwindow/position'))
         self.resize(settings.value('mainwindow/size'))
-
-    def write_settings(self) -> None:
-        settings = QSettings()
-        settings.setValue('mainwindow/position', self.pos())
-        settings.setValue('mainwindow/size', self.size())
-
-    def closeEvent(self, event) -> None:
-        self.write_settings()
-        event.accept()
 
     def _init_layout(self) -> None:
         self.layout = QVBoxLayout()
@@ -46,7 +37,7 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.statusbar)
 
     def _init_tabwidget(self) -> None:
-        self.tabwidget = QTabWidget()
+        self.tabwidget = CustomTabWidget()
         self.tabwidget.addTab(MainTab(), 'Main Tab')
         #self.tabwidget.addTab(SettingsTab(), 'Settings')
         # self.tabwidget.tabBar().hide()
@@ -57,3 +48,21 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         central_widget.setLayout(self.layout)
+
+    def closeEvent(self, event) -> None:
+        settings = QSettings()
+        settings.setValue('mainwindow/position', self.pos())
+        settings.setValue('mainwindow/size', self.size())
+    
+        self.tabwidget.closeEvent(event)
+
+        super().closeEvent(event)
+
+
+class CustomTabWidget(QTabWidget):
+    def closeEvent(self, event):
+        for i in range(self.count()):
+            tab = self.widget(i)
+            tab.closeEvent(event)
+
+        return super().closeEvent(event)

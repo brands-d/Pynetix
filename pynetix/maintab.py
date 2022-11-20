@@ -1,32 +1,46 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSpacerItem, QSizePolicy, QSplitter
-from PyQt6.QtCore import Qt
-from pynetix.foldwidget import FoldWidget
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy
+from PyQt6.QtCore import Qt, QSettings
+
+from pynetix.foldwidget import FoldWidget, TreeWidget
 
 
 class MainTab(QWidget):
     def __init__(self) -> None:
         super().__init__()
+        self.setObjectName('MainTab')
 
         self.plotarea = None
         self.sidebar = None
         self.splitter = None
+        self.filetree = None
+        self.tools = None
+        self.meta_data = None
 
         self._init_layout()
         self._init_splitter()
         self._init_sidebar()
+        self._init_filetree()
+        self._init_tools()
+        self._init_metadata()
         self._init_plotarea()
+
+        self.read_settings()
+
+    def read_settings(self) -> None:
+        if 'maintab/splitter_sizes' in QSettings().allKeys():
+            self.splitter.setSizes(QSettings().value('maintab/splitter_sizes'))
 
     def _init_layout(self) -> None:
         layout = QHBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
+        # layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
     def _init_splitter(self) -> None:
         self.splitter = QSplitter()
-        self.splitter.setHandleWidth(0)
+        # self.splitter.setHandleWidth(0)
         self.layout().addWidget(self.splitter)
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
-        self.splitter.setChildrenCollapsible(False)
+        self.splitter.setChildrenCollapsible(True)
 
     def _init_plotarea(self) -> None:
         self.plotarea = QWidget()
@@ -38,8 +52,54 @@ class MainTab(QWidget):
         self.sidebar = SideBar()
         self.splitter.addWidget(self.sidebar)
 
+    def _init_filetree(self) -> None:
+        self.filetree = FoldWidget(QWidget(), 'File Explorer')
+        self.sidebar.addWidget(self.filetree)
+
+    def _init_tools(self) -> None:
+        self.tools = FoldWidget(QWidget(), 'Tools')
+        self.sidebar.addWidget(self.tools)
+
+    def _init_metadata(self) -> None:
+        self.meta_data = FoldWidget(QWidget(), 'Meta Data')
+        self.sidebar.addWidget(self.meta_data)
+
+    def closeEvent(self, event):
+        QSettings().setValue('maintab/splitter_sizes', self.splitter.sizes())
+
+        return super().closeEvent(event)
+
 
 class SideBar(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.splitter = None
+
+        self._init_layout()
+        self._init_splitter()
+
+    def addWidget(self, widget):
+        self.splitter.addWidget(widget)
+
+    def _init_layout(self) -> None:
+        self.setLayout(QVBoxLayout())
+
+        self.setMinimumWidth(100)
+        self.setBaseSize(500, 100)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred,
+                           QSizePolicy.Policy.Expanding)
+
+    def _init_splitter(self) -> None:
+        self.splitter = QSplitter()
+        # self.splitter.setHandleWidth(0)
+        self.splitter.setChildrenCollapsible(False)
+        self.splitter.setOrientation(Qt.Orientation.Vertical)
+
+        self.layout().addWidget(self.splitter)
+
+
+class OldSideBar(QWidget):
     def __init__(self) -> None:
         super().__init__()
 
@@ -77,7 +137,7 @@ class SideBar(QWidget):
         self.splitter.setChildrenCollapsible(False)
 
     def _init_filetree(self) -> None:
-        self.filetree = FoldWidget(QWidget(), 'File Tree')
+        self.filetree = TreeWidget()
         self.splitter.addWidget(self.filetree)
         self.filetree.fold_changed.connect(
             lambda: self.change_fold(self.filetree))
