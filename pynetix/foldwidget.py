@@ -16,15 +16,19 @@ class FoldWidget(QWidget):
         self._init_bar(label)
         self._init_body(widget)
 
-        self.prev_height = self.body.height()
+        self.prev_height = self.height()
 
     @property
-    def folded(self) -> bool:
-        return self.bar.folded
+    def is_folded(self) -> bool:
+        return self.bar.is_folded
 
-    @folded.setter
-    def folded(self, folded: bool) -> None:
-        self.bar.folded = folded
+    @property
+    def bar_height(self) -> int:
+        return self.bar.height()
+
+    @is_folded.setter
+    def is_folded(self, folded: bool) -> None:
+        self.bar.is_folded = folded
 
     def setMinimumHeight(self, value: int) -> None:
         super().setMinimumHeight(self.bar.height() + value)
@@ -64,14 +68,14 @@ class FoldWidgetBar(QWidget):
         self.label = None
         self.button = None
 
-        self.folded = False
+        self.is_folded = False
 
         self._init_layout()
         self._init_label(label)
         self._init_button()
 
     def fold(self) -> None:
-        self.folded = True
+        self.is_folded = True
 
         self.button.clicked.disconnect(self.fold)
         self.button.clicked.connect(self.unfold)
@@ -79,7 +83,7 @@ class FoldWidgetBar(QWidget):
         self.folding.emit()
 
     def unfold(self) -> None:
-        self.folded = False
+        self.is_folded = False
 
         self.button.clicked.disconnect(self.unfold)
         self.button.clicked.connect(self.fold)

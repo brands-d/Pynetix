@@ -1,4 +1,4 @@
-from PyQt6.QtCore import Qt, QSettings, QVariantAnimation
+from PyQt6.QtCore import Qt, QSettings, QVariantAnimation, QEasingCurve
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy, QSpacerItem
 
 
@@ -74,52 +74,80 @@ class SideBar(QWidget):
         super().__init__()
 
         self.splitter = None
+
         self._init_layout()
         self._init_splitter()
 
-        self._i = None  # which widget is changing
-        self.animation = QVariantAnimation(valueChanged=self._change_sizes)
+        self._i = None  # needed to keep track of which widget is collapsing during animation
+        self.animation = QVariantAnimation()
+        # for some reason QVariantAnimations first value is the what the last value
+        # of the previous run should have been -> tiny flickering in the start of
+        # the animation. Solution: skip the first loop
+        self.first_loop = False
+        self.animation.valueChanged.connect(self._change_sizes)
         self.animation.finished.connect(self._size_change_finished)
+        self.animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
 
     def addWidget(self, widget: QWidget) -> None:
         self.splitter.addWidget(widget)
         widget.folding.connect(lambda: self.initiate_folding(widget))
 
     def initiate_folding(self, widget: QWidget) -> None:
+        self.first_loop = True
         self._i = self.splitter.indexOf(widget)
 
-        if widget.folded:
-            # widget "wants" to fold but is unfolded
+        # Widget changes it's status first because the signal emits from
+        # bar which never actually changes size. Thus if widget thinks it
+        # is folded when this function was called it is not yet actually
+        # folded. Thus if true, widget is to be folded.
+        if widget.is_folded:
+            # Remove the lower bound on the size (FoldWidget keep track of bar size themselves).
+            # Save the previous state to get approx. same size on unfold back.
+            # Create animation from now to only the bar.
             widget.setMinimumHeight(0)
             widget.prev_height = widget.height()
             self.animation.setStartValue(widget.height())
-            self.animation.setEndValue(widget.bar.height())
+            self.animation.setEndValue(widget.minimumHeight())
         else:
+            # Remove upper bound on height.
+            # Start animation from now to previous size.
             widget.setMaximumHeight(1000000)
             self.animation.setStartValue(widget.height())
             self.animation.setEndValue(widget.prev_height)
 
         if self._i == 0:
-            self.splitter.handle(1).setEnabled(not widget.folded)
-        elif self._i == 2 and self.splitter.widget(1).folded:
-            self.splitter.handle(1).setEnabled(not widget.folded)
+            self.splitter.handle(1).setEnabled(not widget.is_folded)
+        elif self._i == 2 and self.splitter.widget(1).is_folded:
+            self.splitter.handle(1).setEnabled(not widget.is_folded)
         else:
-            self.splitter.handle(2).setEnabled(not widget.folded)
+            self.splitter.handle(2).setEnabled(not widget.is_folded)
 
         self.animation.start()
 
     def _change_sizes(self, value: int) -> None:
-        sizes = self.splitter.sizes()
-        sizes[self._i] = value
-        self.splitter.setSizes(sizes)
+        if not self.first_loop:
+            sizes = self.splitter.sizes()
+            sizes[self._i] = value
+            self.splitter.setSizes(sizes)
+
+        self.first_loop = False
 
     def _size_change_finished(self) -> None:
         widget = self.splitter.widget(self._i)
-        if widget.folded:
+        self._i = None
+
+        if widget.is_folded:
+            # After animation set maximum height to 0.
+            # Necessary to ensure moving splitters by hand does
+            # not expand the bar. Cannot be done before animation
+            # because it would instantly fold the widget.
             widget.setMaximumHeight(0)
         else:
+            # Set lower bound on height again. Was removed during
+            # folding process. Cannot be done before animation
+            # because the widget would instantly unfold up to the
+            # lower bound.
             widget.setMinimumHeight(50)
-        self._i = None
 
     def _init_layout(self) -> None:
         self.setLayout(QVBoxLayout())
