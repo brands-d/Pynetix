@@ -92,14 +92,30 @@ class SideBar(QWidget):
         self.splitter.addWidget(widget)
         widget.folding.connect(lambda: self.initiate_folding(widget))
 
+    def is_folding_possible(self):
+        number_folded_widget = 0
+        for i in range(self.splitter.count()):
+            number_folded_widget += int(self.splitter.widget(i).is_folded)
+
+        if number_folded_widget >= self.splitter.count() - 1:
+            return False
+        else:
+            return True
+
     def initiate_folding(self, widget: QWidget) -> None:
-        self.first_loop = True
         self._i = self.splitter.indexOf(widget)
+        if self._i == 0:
+            self.splitter.handle(1).setEnabled(not widget.is_folded)
+        elif self._i == 2 and self.splitter.widget(1).is_folded:
+            self.splitter.handle(1).setEnabled(not widget.is_folded)
+        else:
+            self.splitter.handle(2).setEnabled(not widget.is_folded)
 
         # Widget changes it's status first because the signal emits from
         # bar which never actually changes size. Thus if widget thinks it
         # is folded when this function was called it is not yet actually
         # folded. Thus if true, widget is to be folded.
+        self.first_loop = True
         if widget.is_folded:
             # Remove the lower bound on the size (FoldWidget keep track of bar size themselves).
             # Save the previous state to get approx. same size on unfold back.
@@ -114,13 +130,6 @@ class SideBar(QWidget):
             widget.setMaximumHeight(1000000)
             self.animation.setStartValue(widget.height())
             self.animation.setEndValue(widget.prev_height)
-
-        if self._i == 0:
-            self.splitter.handle(1).setEnabled(not widget.is_folded)
-        elif self._i == 2 and self.splitter.widget(1).is_folded:
-            self.splitter.handle(1).setEnabled(not widget.is_folded)
-        else:
-            self.splitter.handle(2).setEnabled(not widget.is_folded)
 
         self.animation.start()
 

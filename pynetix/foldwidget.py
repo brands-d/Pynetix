@@ -22,9 +22,8 @@ class FoldWidget(QWidget):
     def is_folded(self) -> bool:
         return self.bar.is_folded
 
-    @property
-    def bar_height(self) -> int:
-        return self.bar.height()
+    def get_sidebar(self):
+        return self.parent().parent()
 
     @is_folded.setter
     def is_folded(self, folded: bool) -> None:
@@ -74,7 +73,13 @@ class FoldWidgetBar(QWidget):
         self._init_label(label)
         self._init_button()
 
+    def get_sidebar(self):
+        return self.parent().get_sidebar()
+
     def fold(self) -> None:
+        if not self.get_sidebar().is_folding_possible():
+            return
+
         self.is_folded = True
 
         self.button.clicked.disconnect(self.fold)
