@@ -123,3 +123,5 @@ class FoldWidgetBar(QWidget):
         self.layout().insertWidget(0, self.button)
 
         self.button.clicked.connect(self.fold)
+        from PyQt6.QtWidgets import QApplication
+        self.button.clicked.connect(lambda:print(QApplication.instance().mainwindow.statusbar.currentMessage()))

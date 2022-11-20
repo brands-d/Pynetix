@@ -21,10 +21,10 @@ class Icon:
             try:
                 icon = QIcon(icon_path)
             except ValueError:
-                getLogger(__project__).warning(f'Icon "{name}" not readable.')
+                getLogger(__project__).warning(f'Icon "{name}" not readable.', 10000)
                 icon = QIcon()
         else:
-            getLogger(__project__).warning(f'Icon "{name}" not found.')
+            getLogger(__project__).warning(f'Icon "{name}" not found.', 10000)
             icon = QIcon()
 
         return icon
@@ -43,7 +43,7 @@ class Icon:
                 with open(directory / 'raw' / icon, 'r') as f:
                     content = f.read()
             except FileNotFoundError:
-                getLogger(__project__).warning(f'Icon "{icon}" not found.')
+                getLogger(__project__).warning(f'Icon "{icon}" not found.', 10000)
             else:
                 for colour in Colour:
                     content = content.replace(fr'$({colour})', Colour[colour])

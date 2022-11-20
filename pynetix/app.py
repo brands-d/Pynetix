@@ -35,6 +35,7 @@ class App(QApplication):
         self._init_logging()
 
         # finalizations
+        self._init_icons()
         self.mainwindow.show()
         getLogger(__project__).info('Initialization finished.')
 
@@ -53,7 +54,6 @@ class App(QApplication):
 
     def update_colours(self) -> None:
         Colour.update_colour_scheme(QSettings().value('colours/theme'))
-        Icon.update_colours()
 
     def update_style(self) -> None:
         self.setStyleSheet(Style.get_style('application'))
@@ -89,6 +89,9 @@ class App(QApplication):
 
     def remove_task(self, task):
         self.tasks.remove(task)
+
+    def _init_icons(self) -> None:
+        Icon.update_colours()
 
     def _init_mainwindow(self) -> None:
         self.mainwindow = MainWindow()
