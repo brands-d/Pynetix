@@ -1,13 +1,13 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy
 from PyQt6.QtCore import Qt, QSettings, QVariantAnimation
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy, QSpacerItem
 
-from pynetix.foldwidget import FoldWidget, TreeWidget
+
+from pynetix.foldwidget import FoldWidget
 
 
 class MainTab(QWidget):
     def __init__(self) -> None:
         super().__init__()
-        self.setObjectName('MainTab')
 
         self.plotarea = None
         self.sidebar = None
@@ -32,12 +32,11 @@ class MainTab(QWidget):
 
     def _init_layout(self) -> None:
         layout = QHBoxLayout()
-        # layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
     def _init_splitter(self) -> None:
         self.splitter = QSplitter()
-        # self.splitter.setHandleWidth(0)
+        self.splitter.setHandleWidth(0)
         self.layout().addWidget(self.splitter)
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.splitter.setChildrenCollapsible(True)
@@ -96,8 +95,16 @@ class SideBar(QWidget):
             self.animation.setStartValue(widget.height())
             self.animation.setEndValue(widget.bar.height())
         else:
+            widget.setMaximumHeight(1000000)
             self.animation.setStartValue(widget.height())
             self.animation.setEndValue(widget.prev_height)
+
+        if self._i == 0:
+            self.splitter.handle(1).setEnabled(not widget.folded)
+        elif self._i == 2 and self.splitter.widget(1).folded:
+            self.splitter.handle(1).setEnabled(not widget.folded)
+        else:
+            self.splitter.handle(2).setEnabled(not widget.folded)
 
         self.animation.start()
 
@@ -108,7 +115,9 @@ class SideBar(QWidget):
 
     def _size_change_finished(self) -> None:
         widget = self.splitter.widget(self._i)
-        if not widget.folded:
+        if widget.folded:
+            widget.setMaximumHeight(0)
+        else:
             widget.setMinimumHeight(50)
         self._i = None
 
@@ -122,72 +131,8 @@ class SideBar(QWidget):
 
     def _init_splitter(self) -> None:
         self.splitter = QSplitter()
-        # self.splitter.setHandleWidth(0)
-        self.splitter.setChildrenCollapsible(False)
-        self.splitter.setOrientation(Qt.Orientation.Vertical)
-
-        self.layout().addWidget(self.splitter)
-
-
-"""
-class OldSideBar(QWidget):
-    def __init__(self) -> None:
-        super().__init__()
-
-        self.meta_data = None
-        self.tools = None
-        self.filetree = None
-        self.splitter = None
-        self.widget_order = []
-
-        self._init_layout()
-        self._init_splitter()
-        self._init_filetree()
-        self._init_tools()
-        self._init_metadata()
-
-    def change_fold(self, widget):
-        if widget.is_folded:
-            index = self.widget_order.index(widget)
-            self.splitter.insertWidget(index, widget)
-        else:
-            self.layout().insertWidget(1, widget)
-
-    def _init_layout(self) -> None:
-        layout = QVBoxLayout()
-        layout.setSpacing(0)
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
-
-    def _init_splitter(self) -> None:
-        self.splitter = QSplitter()
         self.splitter.setHandleWidth(0)
-        self.layout().addWidget(self.splitter)
-        self.layout().setStretchFactor(self.splitter, 1)
-        self.splitter.setOrientation(Qt.Orientation.Vertical)
         self.splitter.setChildrenCollapsible(False)
+        self.splitter.setOrientation(Qt.Orientation.Vertical)
 
-    def _init_filetree(self) -> None:
-        self.filetree = TreeWidget()
-        self.splitter.addWidget(self.filetree)
-        self.filetree.fold_changed.connect(
-            lambda: self.change_fold(self.filetree))
-
-        self.widget_order.append(self.filetree)
-
-    def _init_tools(self) -> None:
-        self.tools = FoldWidget(QWidget(), 'Tools', folded=True)
-        self.layout().addWidget(self.tools)
-        self.tools.fold_changed.connect(
-            lambda: self.change_fold(self.tools))
-
-        self.widget_order.append(self.tools)
-
-    def _init_metadata(self) -> None:
-        self.meta_data = FoldWidget(QWidget(), 'Meta Data', folded=True)
-        self.layout().addWidget(self.meta_data)
-        self.meta_data.fold_changed.connect(
-            lambda: self.change_fold(self.meta_data))
-
-        self.widget_order.append(self.meta_data)
-"""
+        self.layout().addWidget(self.splitter)
