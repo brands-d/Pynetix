@@ -1,4 +1,3 @@
-from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
                              QVBoxLayout, QWidget)
@@ -88,6 +87,8 @@ class FoldWidgetBar(QWidget):
         self.button.clicked.disconnect(self.fold)
         self.button.clicked.connect(self.unfold)
 
+        self.button.setIcon(Icon.get_icon('Arrow Right'))
+
         self.folding.emit()
 
     def unfold(self) -> None:
@@ -95,6 +96,8 @@ class FoldWidgetBar(QWidget):
 
         self.button.clicked.disconnect(self.unfold)
         self.button.clicked.connect(self.fold)
+
+        self.button.setIcon(Icon.get_icon('Arrow Down'))
 
         self.folding.emit()
 
