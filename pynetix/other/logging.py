@@ -27,7 +27,7 @@ class StatusBarHandler(Handler):
         if not pass_message:
             # check if long enough ago
             time_passed = (datetime.now() -
-                           self.last_message['time']).microseconds / 1000
+                           self.last_message['time']).total_seconds()
             if time_passed > self.last_message['duration']:
                 pass_message = True
 
@@ -36,7 +36,7 @@ class StatusBarHandler(Handler):
             style, message = self.format(record)
 
             self.statusbar.setStyleSheet(style)
-            self.statusbar.showMessage(message, duration)
+            self.statusbar.showMessage(message)
             self.last_message.update(
                 {'message': message, 'duration': duration, 'level': record.levelname,
                  'time': datetime.now()})
