@@ -1,6 +1,6 @@
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QVBoxLayout,
-                             QWidget, QSizePolicy)
+from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
+                             QVBoxLayout, QWidget)
 
 
 class FoldWidget(QWidget):
@@ -104,7 +104,10 @@ class FoldWidgetBar(QWidget):
                            QSizePolicy.Policy.Minimum)
 
     def _init_label(self, label: str) -> None:
-        self.label = QLabel(label)
+        self.label = QLabel('  ' + label)
+        self.label.setSizePolicy(QSizePolicy.Policy.Minimum,
+                                 QSizePolicy.Policy.Minimum)
+
         self.layout().addWidget(self.label)
 
     def _init_button(self) -> None:

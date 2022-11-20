@@ -1,8 +1,9 @@
-from PyQt6.QtCore import Qt, QSettings, QVariantAnimation, QEasingCurve
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy, QSpacerItem
-
+from PyQt6.QtCore import QEasingCurve, QSettings, Qt, QVariantAnimation
+from PyQt6.QtWidgets import (QHBoxLayout, QSizePolicy, QSplitter,
+                             QVBoxLayout, QWidget)
 
 from pynetix.foldwidget import FoldWidget
+from pynetix.other.stylesheet import Style
 
 
 class MainTab(QWidget):
@@ -88,6 +89,8 @@ class SideBar(QWidget):
         self.animation.finished.connect(self._size_change_finished)
         self.animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
 
+        self.update_style()
+
     def addWidget(self, widget: QWidget) -> None:
         self.splitter.addWidget(widget)
         widget.folding.connect(lambda: self.initiate_folding(widget))
@@ -132,6 +135,9 @@ class SideBar(QWidget):
             self.animation.setEndValue(widget.prev_height)
 
         self.animation.start()
+
+    def update_style(self) -> None:
+        self.setStyleSheet(Style.get_style('sidebar'))
 
     def _change_sizes(self, value: int) -> None:
         if not self.first_loop:

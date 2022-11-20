@@ -1,0 +1,4 @@
+QLabel{
+    background-color: $(GRAY);
+}
+

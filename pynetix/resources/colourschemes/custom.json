@@ -4,5 +4,6 @@
     "BLACK": "#262526",
     "WHITE": "#ffffff",
     "BLUE": "#3478c6",
-    "GRAY": "#383838"
+    "GRAY": "#383838",
+    "EGGSHELL": "#cccccc"
 }

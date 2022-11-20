@@ -39,16 +39,6 @@ class App(QApplication):
 
         self.check_for_updates()
 
-    def _init_mainwindow(self) -> None:
-        self.mainwindow = MainWindow()
-
-    def _init_logging(self) -> None:
-        log = getLogger(__project__)
-        log.setLevel(DEBUG)
-        handler = StatusBarHandler(self.mainwindow.statusBar())
-        handler.setFormatter(ColoredStatusBarFormatter())
-        log.addHandler(handler)
-
     def verify_settings(self) -> None:
         settings = QSettings()
         defaults = QSettings(str(__resources__ / 'default_settings.ini'),
@@ -90,8 +80,23 @@ class App(QApplication):
 
             task = Task(f)
             task.finished.connect(self._handle_update_results)
-            # self.add_task(task)
             task.start()
+
+    def add_task(self, task):
+        self.tasks.append(task)
+
+    def remove_task(self, task):
+        self.tasks.remove(task)
+
+    def _init_mainwindow(self) -> None:
+        self.mainwindow = MainWindow()
+
+    def _init_logging(self) -> None:
+        log = getLogger(__project__)
+        log.setLevel(DEBUG)
+        handler = StatusBarHandler(self.mainwindow.statusBar())
+        handler.setFormatter(ColoredStatusBarFormatter())
+        log.addHandler(handler)
 
     def _handle_update_results(self):
         task = self.sender()
@@ -104,9 +109,3 @@ class App(QApplication):
             getLogger(__project__).warning('Newer version available.')
         else:
             getLogger(__project__).warning('Checking for updates failed.')
-
-    def add_task(self, task):
-        self.tasks.append(task)
-
-    def remove_task(self, task):
-        self.tasks.remove(task)
