@@ -10,6 +10,7 @@ from pynetix.other.lib import str_to_bool
 from pynetix.other.logging import ColoredStatusBarFormatter, StatusBarHandler
 from pynetix.other.stylesheet import Style
 from pynetix.other.worker import Task
+from pynetix.other.icons import Icon
 
 
 class App(QApplication):
@@ -52,6 +53,7 @@ class App(QApplication):
 
     def update_colours(self) -> None:
         Colour.update_colour_scheme(QSettings().value('colours/theme'))
+        Icon.update_colours()
 
     def update_style(self) -> None:
         self.setStyleSheet(Style.get_style('application'))

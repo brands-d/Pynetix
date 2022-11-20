@@ -1,6 +1,9 @@
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
                              QVBoxLayout, QWidget)
+
+from pynetix.other.icons import Icon
 
 
 class FoldWidget(QWidget):
@@ -112,6 +115,8 @@ class FoldWidgetBar(QWidget):
 
     def _init_button(self) -> None:
         self.button = QPushButton()
+        self.button.setIcon(Icon.get_icon('Arrow Down'))
+
         self.layout().insertWidget(0, self.button)
 
         self.button.clicked.connect(self.fold)
