@@ -138,3 +138,4 @@ report.tar.gz
 
 # IDE
 .vscode
+.DS_Store

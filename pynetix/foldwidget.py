@@ -5,59 +5,30 @@ from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QVBoxLayout,
 
 
 class FoldWidget(QWidget):
+    folding = pyqtSignal()
+
     def __init__(self, widget, label) -> None:
         super().__init__()
 
         self.bar = None
         self.body = None
 
-        self.folded = False
-        self.prev_height = 0
-        self.max_height = QApplication.instance().primaryScreen().size().height()
-
         self._init_layout()
         self._init_bar(label)
         self._init_body(widget)
 
-        self.animation = QPropertyAnimation(self.body, b'maximumHeight')
-        self.animation.finished.connect(self._folding_finished)
+        self.prev_height = self.body.height()
 
-    def folding(self, folded) -> None:
-        if folded:
-            # not folded -> folded
-            self.folded = True
-            self.body.setMinimumHeight(0)
-            self.body.setMaximumHeight(self.body.height())
-            self.prev_height = self.body.height()
-            self.animation.setEndValue(0)
-            self.animation.setDuration(self.body.height()/1.5)
-        else:
-            # folded -> unfolded
-            self.folded = False
-            self.body.prev_height = 0
-            self.animation.setEndValue(self.prev_height)
-            self.animation.setDuration(self.prev_height/1.5)
+    @property
+    def folded(self) -> bool:
+        return self.bar.folded
 
-        self.animation.start()
+    @folded.setter
+    def folded(self, folded: bool) -> None:
+        self.bar.folded = folded
 
-    def _folding_finished(self):
-        if not self.folded:
-            self.body.setMaximumHeight(16777215)
-            self.body.setMinimumHeight(50)
-
-        """if folded:
-            self.body.setMaximumHeight(self.body.height())
-            self.body.setMinimumHeight(0)
-            new_height = 0
-            duration = self.body.height()/1.5
-        else:
-            self.body.setMinimumHeight(50)
-            new_height = self.max_height
-            duration = self.max_height/1.5
-
-        self.animation.setDuration(duration)
-        self.animation.setEndValue(new_height)
-        self.animation.start()"""
+    def setMinimumHeight(self, value: int) -> None:
+        self.body.setMinimumHeight(value)
 
     def _init_layout(self) -> None:
         self.setLayout(QVBoxLayout())
@@ -66,20 +37,19 @@ class FoldWidget(QWidget):
         self.bar = FoldWidgetBar(label)
         self.layout().addWidget(self.bar)
 
-        self.bar.folded.connect(self.folding)
+        self.bar.folding.connect(self.folding.emit)
 
     def _init_body(self, widget) -> None:
         self.body = widget
         self.layout().addWidget(self.body)
 
         self.body.setMinimumHeight(50)
-        self.body.setMaximumHeight(self.max_height)
         self.body.setSizePolicy(QSizePolicy.Policy.Preferred,
                                 QSizePolicy.Policy.Expanding)
 
 
 class FoldWidgetBar(QWidget):
-    folded = pyqtSignal(bool)
+    folding = pyqtSignal()
 
     def __init__(self, label) -> None:
         super().__init__()
@@ -87,21 +57,27 @@ class FoldWidgetBar(QWidget):
         self.label = None
         self.button = None
 
+        self.folded = False
+
         self._init_layout()
         self._init_label(label)
         self._init_button()
 
     def fold(self) -> None:
+        self.folded = True
+
         self.button.clicked.disconnect(self.fold)
         self.button.clicked.connect(self.unfold)
 
-        self.folded.emit(True)
+        self.folding.emit()
 
     def unfold(self) -> None:
+        self.folded = False
+
         self.button.clicked.disconnect(self.unfold)
         self.button.clicked.connect(self.fold)
 
-        self.folded.emit(False)
+        self.folding.emit()
 
     def _init_layout(self) -> None:
         self.setLayout(QHBoxLayout())
@@ -109,7 +85,7 @@ class FoldWidgetBar(QWidget):
         self.setSizePolicy(QSizePolicy.Policy.Preferred,
                            QSizePolicy.Policy.Minimum)
 
-    def _init_label(self, label) -> None:
+    def _init_label(self, label: str) -> None:
         self.label = QLabel(label)
         self.layout().addWidget(self.label)
 
@@ -120,6 +96,7 @@ class FoldWidgetBar(QWidget):
         self.button.clicked.connect(self.fold)
 
 
+"""
 class OldFoldWidgetBar(QWidget):
     fold_changed = pyqtSignal()
 
@@ -241,6 +218,8 @@ class OldFoldWidget(QWidget):
         self.layout().addWidget(self.body)
         self.body.setSizePolicy(QSizePolicy.Policy.Expanding,
                                 QSizePolicy.Policy.Expanding)
+
+"""
 
 
 class TreeWidget(FoldWidget):

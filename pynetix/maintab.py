@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy
-from PyQt6.QtCore import Qt, QSettings
+from PyQt6.QtCore import Qt, QSettings, QVariantAnimation
 
 from pynetix.foldwidget import FoldWidget, TreeWidget
 
@@ -75,12 +75,42 @@ class SideBar(QWidget):
         super().__init__()
 
         self.splitter = None
-
         self._init_layout()
         self._init_splitter()
 
-    def addWidget(self, widget):
+        self._i = None  # which widget is changing
+        self.animation = QVariantAnimation(valueChanged=self._change_sizes)
+        self.animation.finished.connect(self._size_change_finished)
+
+    def addWidget(self, widget: QWidget) -> None:
         self.splitter.addWidget(widget)
+        widget.folding.connect(lambda: self.initiate_folding(widget))
+
+    def initiate_folding(self, widget: QWidget) -> None:
+        self._i = self.splitter.indexOf(widget)
+
+        if widget.folded:
+            # widget "wants" to fold but is unfolded
+            widget.setMinimumHeight(0)
+            widget.prev_height = widget.height()
+            self.animation.setStartValue(widget.height())
+            self.animation.setEndValue(widget.bar.height())
+        else:
+            self.animation.setStartValue(widget.height())
+            self.animation.setEndValue(widget.prev_height)
+
+        self.animation.start()
+
+    def _change_sizes(self, value: int) -> None:
+        sizes = self.splitter.sizes()
+        sizes[self._i] = value
+        self.splitter.setSizes(sizes)
+
+    def _size_change_finished(self) -> None:
+        widget = self.splitter.widget(self._i)
+        if not widget.folded:
+            widget.setMinimumHeight(50)
+        self._i = None
 
     def _init_layout(self) -> None:
         self.setLayout(QVBoxLayout())
@@ -99,6 +129,7 @@ class SideBar(QWidget):
         self.layout().addWidget(self.splitter)
 
 
+"""
 class OldSideBar(QWidget):
     def __init__(self) -> None:
         super().__init__()
@@ -159,3 +190,4 @@ class OldSideBar(QWidget):
             lambda: self.change_fold(self.meta_data))
 
         self.widget_order.append(self.meta_data)
+"""
