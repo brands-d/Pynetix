@@ -1,4 +1,3 @@
-QSplitter::handle{
+QSplitter::handle:disabled{
     background-color: $(BLACK);
-    padding: 0px;
 }
