@@ -1,8 +1,9 @@
 from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import QMainWindow, QStatusBar, QTabWidget, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QMainWindow, QStatusBar, QVBoxLayout, QWidget
 
 from pynetix import __project__
 from pynetix.maintab import MainTab
+from pynetix.widgets.tabwidget import TabWidget
 
 
 class MainWindow(QMainWindow):
@@ -37,10 +38,8 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.statusbar)
 
     def _init_tabwidget(self) -> None:
-        self.tabwidget = CustomTabWidget()
+        self.tabwidget = TabWidget()
         self.tabwidget.addTab(MainTab(), 'Main Tab')
-        #self.tabwidget.addTab(SettingsTab(), 'Settings')
-        # self.tabwidget.tabBar().hide()
 
         self.layout.addWidget(self.tabwidget)
 
@@ -53,16 +52,7 @@ class MainWindow(QMainWindow):
         settings = QSettings()
         settings.setValue('mainwindow/position', self.pos())
         settings.setValue('mainwindow/size', self.size())
-    
+
         self.tabwidget.closeEvent(event)
 
         super().closeEvent(event)
-
-
-class CustomTabWidget(QTabWidget):
-    def closeEvent(self, event):
-        for i in range(self.count()):
-            tab = self.widget(i)
-            tab.closeEvent(event)
-
-        return super().closeEvent(event)

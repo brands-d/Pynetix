@@ -1,0 +1,4 @@
+QSplitter::handle{
+    background-color: $(BLACK);
+    padding: 0px;
+}

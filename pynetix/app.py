@@ -6,11 +6,11 @@ from PyQt6.QtWidgets import QApplication
 from pynetix import __project__, __resources__, __version__
 from pynetix.mainwindow import MainWindow
 from pynetix.other.colours import Colour
+from pynetix.other.icons import Icon
 from pynetix.other.lib import str_to_bool
 from pynetix.other.logging import ColoredStatusBarFormatter, StatusBarHandler
 from pynetix.other.stylesheet import Style
 from pynetix.other.worker import Task
-from pynetix.other.icons import Icon
 
 
 class App(QApplication):
@@ -56,7 +56,7 @@ class App(QApplication):
         Colour.update_colour_scheme(QSettings().value('colours/theme'))
 
     def update_style(self) -> None:
-        self.setStyleSheet(Style.get_style('application'))
+        self.setStyleSheet(Style.get_style('Application'))
 
     def check_for_updates(self) -> None:
         if str_to_bool(QSettings().value('remote/check_update')):

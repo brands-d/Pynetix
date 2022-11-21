@@ -5,12 +5,16 @@ from pynetix.other.colours import Colour
 
 
 class Style:
+    styles = {'Application': 'application',
+              'SideBar': 'sidebar',
+              'QSplitter Base': 'splitter_base',
+              'QSplitter Hover': 'splitter_hover'}
 
     @staticmethod
-    def get_style(widget: str) -> str:
+    def get_style(name: str) -> str:
         directory = __resources__ / 'stylesheets'
-        user_file = directory / f'{widget}_user.qss'
-        default_file = directory / f'{widget}.qss'
+        user_file = directory / f'{Style.styles[name]}_user.qss'
+        default_file = directory / f'{Style.styles[name]}.qss'
 
         if exists(user_file):
             with open(user_file, 'r') as f:
