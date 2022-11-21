@@ -26,16 +26,16 @@ class App(QApplication):
         self.verify_settings()
         self.update_colours()
         self.update_style()
+        self._init_icons()
 
         # declaration of direct children
         self.mainwindow = None
 
         # init of children
         self._init_mainwindow()
-        self._init_logging()
 
         # finalizations
-        self._init_icons()
+        self._init_logging()
         self.mainwindow.show()
         getLogger(__project__).info('Initialization finished.')
 

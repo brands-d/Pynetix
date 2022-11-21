@@ -1,4 +1,4 @@
-from os import remove, path
+from os import remove, path, mkdir
 from logging import getLogger
 
 from PyQt6.QtGui import QIcon
@@ -21,31 +21,35 @@ class Icon:
             try:
                 icon = QIcon(icon_path)
             except ValueError:
-                getLogger(__project__).warning(f'Icon "{name}" not readable.', 5)
+                getLogger(__project__).warning(f'Icon "{name}" not readable.')
                 icon = QIcon()
         else:
-            getLogger(__project__).warning(f'Icon "{name}" not found.', 5)
+            getLogger(__project__).warning(f'Icon "{name}" not found.')
             icon = QIcon()
 
         return icon
 
     @staticmethod
     def update_colours():
-        directory = __resources__ / 'icons'
+        directory_coloured = __resources__ / 'icons' / 'coloured'
+        directory_raw = __resources__ / 'icons' / 'raw'
+
+        if not path.isdir(directory_coloured):
+            mkdir(directory_coloured)
 
         for icon in Icon.icons.values():
             try:
-                remove(directory / 'coloured' / icon)
+                remove(directory_coloured / icon)
             except FileNotFoundError:
                 pass
 
             try:
-                with open(directory / 'raw' / icon, 'r') as f:
+                with open(directory_raw / icon, 'r') as f:
                     content = f.read()
             except FileNotFoundError:
-                getLogger(__project__).warning(f'Icon "{icon}" not found.', 5)
+                getLogger(__project__).warning(f'Icon "{icon}" not found.')
             else:
                 for colour in Colour:
                     content = content.replace(fr'$({colour})', Colour[colour])
-                with open(directory / 'coloured' / icon, 'w') as f:
+                with open(directory_coloured / icon, 'w') as f:
                     f.write(content)
