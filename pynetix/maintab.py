@@ -26,6 +26,7 @@ class MainTab(QWidget):
         self._init_plotarea()
 
         self.read_settings()
+        self.sidebar.read_settings()
 
     def read_settings(self) -> None:
         if 'maintab/splitter_sizes' in QSettings().allKeys():
@@ -66,5 +67,7 @@ class MainTab(QWidget):
 
     def closeEvent(self, event):
         QSettings().setValue('maintab/splitter_sizes', self.splitter.sizes())
+
+        self.sidebar.closeEvent(event)
 
         return super().closeEvent(event)

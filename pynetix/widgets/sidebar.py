@@ -1,8 +1,9 @@
-from PyQt6.QtCore import QEasingCurve, Qt, QVariantAnimation
+from PyQt6.QtCore import QEasingCurve, QSettings, Qt, QVariantAnimation
 from PyQt6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
 
 from pynetix.other.stylesheet import Style
 from pynetix.widgets.splitter import Splitter
+
 
 class SideBar(QWidget):
     def __init__(self) -> None:
@@ -44,7 +45,7 @@ class SideBar(QWidget):
         if self._i == 0 or (self._i == 2 and self.splitter.widget(1).is_folded):
             self.splitter.enabled_handlers[1] = not widget.is_folded
             #self.splitter.handle(1).setEnabled(not widget.is_folded)
-        #elif self._i == 2 and self.splitter.widget(1).is_folded:
+        # elif self._i == 2 and self.splitter.widget(1).is_folded:
             #self.splitter.handle(1).setEnabled(not widget.is_folded)
         else:
             self.splitter.enabled_handlers[2] = not widget.is_folded
@@ -74,6 +75,24 @@ class SideBar(QWidget):
 
     def update_style(self) -> None:
         self.setStyleSheet(Style.get_style('SideBar'))
+
+    def read_settings(self) -> None:
+        self.splitter.setSizes(QSettings().value('sidebar/splitter_sizes'))
+
+        """
+        # produces weird results for some reason
+        folded_widgets = QSettings().value('sidebar/folded_widgets')
+        for i in range(self.splitter.count()):
+            if folded_widgets[i]:
+                self.splitter.widget(i).fold()"""
+
+    def closeEvent(self, event) -> None:
+        QSettings().setValue('sidebar/splitter_sizes', self.splitter.sizes())
+        folded_widgets = [self.splitter.widget(
+            i).is_folded for i in range(self.splitter.count())]
+        QSettings().setValue('sidebar/folded_widgets', folded_widgets)
+
+        return super().closeEvent(event)
 
     def _change_sizes(self, value: int) -> None:
         if not self.first_loop:

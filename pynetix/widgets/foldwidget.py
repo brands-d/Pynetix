@@ -27,6 +27,12 @@ class FoldWidget(QWidget):
     def get_sidebar(self):
         return self.parent().parent()
 
+    def fold(self) -> None:
+        self.bar.fold()
+
+    def unfold(self) -> None:
+        self.bar.unfold()
+
     @is_folded.setter
     def is_folded(self, folded: bool) -> None:
         self.bar.is_folded = folded
@@ -120,7 +126,7 @@ class FoldWidgetBar(QWidget):
         self.button = QPushButton()
         self.button.setIcon(Icon.get_icon('Arrow Down'))
         self.button.setSizePolicy(QSizePolicy.Policy.Minimum,
-                                 QSizePolicy.Policy.Minimum)
+                                  QSizePolicy.Policy.Minimum)
         self.layout().insertWidget(0, self.button)
 
         self.button.clicked.connect(self.fold)
