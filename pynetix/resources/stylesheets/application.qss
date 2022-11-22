@@ -20,7 +20,7 @@ QMainWindow{
 
 QSplitter::handle{
     background-color: $(BLACK);
-    padding: 2px;
+    border: 0px solid $(BLUE);
 }
 
 QPushButton{

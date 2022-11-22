@@ -41,12 +41,14 @@ class SideBar(QWidget):
 
     def initiate_folding(self, widget: QWidget) -> None:
         self._i = self.splitter.indexOf(widget)
-        if self._i == 0:
-            self.splitter.handle(1).setEnabled(not widget.is_folded)
-        elif self._i == 2 and self.splitter.widget(1).is_folded:
-            self.splitter.handle(1).setEnabled(not widget.is_folded)
+        if self._i == 0 or (self._i == 2 and self.splitter.widget(1).is_folded):
+            self.splitter.enabled_handlers[1] = not widget.is_folded
+            #self.splitter.handle(1).setEnabled(not widget.is_folded)
+        #elif self._i == 2 and self.splitter.widget(1).is_folded:
+            #self.splitter.handle(1).setEnabled(not widget.is_folded)
         else:
-            self.splitter.handle(2).setEnabled(not widget.is_folded)
+            self.splitter.enabled_handlers[2] = not widget.is_folded
+            #self.splitter.handle(2).setEnabled(not widget.is_folded)
 
         # Widget changes it's status first because the signal emits from
         # bar which never actually changes size. Thus if widget thinks it

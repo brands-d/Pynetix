@@ -1,3 +1,4 @@
 QSplitter::handle:disabled{
     background-color: $(BLACK);
+    border-width: 0px;
 }
