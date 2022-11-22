@@ -120,7 +120,9 @@ class SideBar(QWidget):
             widget.setMinimumHeight(50)
 
     def _init_layout(self) -> None:
-        self.setLayout(QVBoxLayout())
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
 
         self.setMinimumWidth(100)
         self.setBaseSize(500, 100)

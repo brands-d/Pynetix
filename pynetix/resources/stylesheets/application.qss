@@ -32,3 +32,17 @@ QPushButton{
 QLabel{
     padding: 3px;
 }
+
+/* Test purposes 
+
+.QWidget{
+    border: 1px solid red;
+}
+
+QSplitter{
+    border: 1px solid green;
+}
+
+QLabel{
+    border: 1px solid blue;
+}*/

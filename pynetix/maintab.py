@@ -34,6 +34,7 @@ class MainTab(QWidget):
 
     def _init_layout(self) -> None:
         layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
     def _init_splitter(self) -> None:
