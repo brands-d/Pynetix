@@ -111,7 +111,7 @@ class FoldWidgetBar(QWidget):
 
     def _init_label(self, label: str) -> None:
         self.label = QLabel('  ' + label)
-        self.label.setSizePolicy(QSizePolicy.Policy.Minimum,
+        self.label.setSizePolicy(QSizePolicy.Policy.Expanding,
                                  QSizePolicy.Policy.Minimum)
 
         self.layout().addWidget(self.label)
@@ -119,7 +119,8 @@ class FoldWidgetBar(QWidget):
     def _init_button(self) -> None:
         self.button = QPushButton()
         self.button.setIcon(Icon.get_icon('Arrow Down'))
-
+        self.button.setSizePolicy(QSizePolicy.Policy.Minimum,
+                                 QSizePolicy.Policy.Minimum)
         self.layout().insertWidget(0, self.button)
 
         self.button.clicked.connect(self.fold)
