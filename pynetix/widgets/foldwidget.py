@@ -1,6 +1,6 @@
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-                             QVBoxLayout, QWidget)
+                             QVBoxLayout, QWidget, QScrollArea)
 
 from pynetix.other.icons import Icon
 
@@ -59,7 +59,8 @@ class FoldWidget(QWidget):
 
     def _init_body(self, widget) -> None:
         self.body = widget
-        self.layout().addWidget(self.body)
+        scroll = QScrollArea(self.body)
+        self.layout().addWidget(scroll)
 
         self.body.setMinimumHeight(50)
         self.body.setSizePolicy(QSizePolicy.Policy.Preferred,
