@@ -77,7 +77,11 @@ class SideBar(QWidget):
         self.setStyleSheet(Style.get_style('SideBar'))
 
     def read_settings(self) -> None:
-        self.splitter.setSizes(QSettings().value('sidebar/splitter_sizes'))
+        try:
+            self.splitter.setSizes(QSettings().value('sidebar/splitter_sizes'))
+        except TypeError:
+            # this setting is not available
+            pass
 
         """
         # produces weird results for some reason
