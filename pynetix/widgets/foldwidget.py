@@ -59,8 +59,8 @@ class FoldWidget(QWidget):
 
     def _init_body(self, widget) -> None:
         self.body = widget
-        scroll = QScrollArea(self.body)
-        self.layout().addWidget(scroll)
+        #scroll = QScrollArea(self.body)
+        self.layout().addWidget(self.body)
 
         self.body.setMinimumHeight(50)
         self.body.setSizePolicy(QSizePolicy.Policy.Preferred,
@@ -92,7 +92,9 @@ class FoldWidgetBar(QWidget):
         self.is_folded = True
 
         self.button.clicked.disconnect(self.fold)
+        self.label.clicked.disconnect(self.fold)
         self.button.clicked.connect(self.unfold)
+        self.label.clicked.connect(self.unfold)
 
         self.button.setIcon(Icon.get_icon('Arrow Right'))
 
@@ -102,7 +104,9 @@ class FoldWidgetBar(QWidget):
         self.is_folded = False
 
         self.button.clicked.disconnect(self.unfold)
+        self.label.clicked.disconnect(self.unfold)
         self.button.clicked.connect(self.fold)
+        self.label.clicked.connect(self.fold)
 
         self.button.setIcon(Icon.get_icon('Arrow Down'))
 
@@ -117,11 +121,13 @@ class FoldWidgetBar(QWidget):
                            QSizePolicy.Policy.Minimum)
 
     def _init_label(self, label: str) -> None:
-        self.label = QLabel('  ' + label)
+        self.label = QPushButton('  ' + label)
         self.label.setSizePolicy(QSizePolicy.Policy.Expanding,
                                  QSizePolicy.Policy.Minimum)
 
         self.layout().addWidget(self.label)
+
+        self.label.clicked.connect(self.fold)
 
     def _init_button(self) -> None:
         self.button = QPushButton()
