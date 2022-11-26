@@ -1,12 +1,12 @@
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-                             QVBoxLayout, QWidget, QScrollArea)
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
+                               QVBoxLayout, QWidget, QScrollArea)
 
 from pynetix.other.icons import Icon
 
 
 class FoldWidget(QWidget):
-    folding = pyqtSignal()
+    folding = Signal()
 
     def __init__(self, widget, label) -> None:
         super().__init__()
@@ -68,7 +68,7 @@ class FoldWidget(QWidget):
 
 
 class FoldWidgetBar(QWidget):
-    folding = pyqtSignal()
+    folding = Signal()
 
     def __init__(self, label) -> None:
         super().__init__()

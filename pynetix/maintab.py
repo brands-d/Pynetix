@@ -1,5 +1,5 @@
-from PyQt6.QtCore import QSettings, Qt
-from PyQt6.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
+from PySide6.QtCore import QSettings, Qt
+from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from pynetix.widgets.foldwidget import FoldWidget
 from pynetix.widgets.sidebar import SideBar

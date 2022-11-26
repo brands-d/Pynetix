@@ -1,5 +1,5 @@
-from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import QMainWindow, QStatusBar, QVBoxLayout, QWidget
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import QMainWindow, QStatusBar, QVBoxLayout, QWidget
 
 from pynetix import __project__
 from pynetix.maintab import MainTab

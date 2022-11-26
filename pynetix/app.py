@@ -1,7 +1,7 @@
 from logging import DEBUG, getLogger
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtWidgets import QApplication
+from PySide6.QtCore import QSettings
+from PySide6.QtWidgets import QApplication
 
 from pynetix import __project__, __resources__, __version__
 from pynetix.mainwindow import MainWindow

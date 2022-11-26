@@ -1,5 +1,5 @@
-from PyQt6.QtCore import QEvent, QTimer
-from PyQt6.QtWidgets import QSplitter
+from PySide6.QtCore import QEvent, QTimer
+from PySide6.QtWidgets import QSplitter
 
 from pynetix.other.stylesheet import Style
 

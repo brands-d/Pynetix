@@ -1,7 +1,7 @@
 from os import remove, path, mkdir
 from logging import getLogger
 
-from PyQt6.QtGui import QIcon
+from PySide6.QtGui import QIcon
 
 from pynetix import __resources__, __project__
 from pynetix.other.colours import Colour

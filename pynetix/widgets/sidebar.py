@@ -1,5 +1,5 @@
-from PyQt6.QtCore import QEasingCurve, QSettings, Qt, QVariantAnimation
-from PyQt6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtCore import QEasingCurve, QSettings, Qt, QVariantAnimation
+from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
 
 from pynetix.other.stylesheet import Style
 from pynetix.widgets.splitter import Splitter

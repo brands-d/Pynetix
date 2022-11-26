@@ -1,5 +1,6 @@
 from sys import exit
 from signal import signal, SIGINT, SIG_DFL
+
 from pynetix.app import App
 
 
