@@ -27,6 +27,7 @@ QPushButton{
     background-color: $(GRAY);
     border: 0px;
     padding: 3px;
+    text-align:left;
 }
 
 QLabel{
