@@ -30,7 +30,10 @@ class MainTab(QWidget):
 
     def read_settings(self) -> None:
         if 'maintab/splitter_sizes' in QSettings().allKeys():
-            self.splitter.setSizes(QSettings().value('maintab/splitter_sizes'))
+            sizes = QSettings().value('maintab/splitter_sizes')
+            # size is saved as str in some OS
+            sizes = [int(size) for size in sizes]
+            self.splitter.setSizes(sizes)
 
     def _init_layout(self) -> None:
         layout = QHBoxLayout()
