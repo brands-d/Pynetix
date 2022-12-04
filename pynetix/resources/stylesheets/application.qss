@@ -34,6 +34,26 @@ QLabel{
     padding: 3px;
 }
 
+QTreeView::item:hover{
+    background-color: $(BLUEISH_GRAY);
+}
+
+QTreeView::item:selected{
+    background-color: $(LIGHT_BLUEISH_GRAY);
+}
+
+QScrollBar{
+    background-color: $(BLACK);
+}
+
+QScrollBar::handle{
+    background-color: $(GRAY);
+}
+
+QScrollBar::handle:hover{
+    background-color: $(LIGHT_GRAY);
+}
+
 /* Test purposes 
 
 .QWidget{

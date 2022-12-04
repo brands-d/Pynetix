@@ -1,6 +1,7 @@
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
+from pynetix.widgets.filetreewidget import FileTreeWidget
 from pynetix.widgets.foldwidget import FoldWidget
 from pynetix.widgets.sidebar import SideBar
 from pynetix.widgets.splitter import Splitter
@@ -58,7 +59,7 @@ class MainTab(QWidget):
         self.splitter.addWidget(self.sidebar)
 
     def _init_filetree(self) -> None:
-        self.filetree = FoldWidget(QWidget(), 'File Explorer')
+        self.filetree = FileTreeWidget()
         self.sidebar.addWidget(self.filetree)
 
     def _init_tools(self) -> None:
@@ -73,5 +74,6 @@ class MainTab(QWidget):
         QSettings().setValue('maintab/splitter_sizes', self.splitter.sizes())
 
         self.sidebar.closeEvent(event)
-
+        self.filetree.closeEvent(event)
+        
         return super().closeEvent(event)
