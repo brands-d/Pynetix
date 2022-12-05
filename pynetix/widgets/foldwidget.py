@@ -1,6 +1,6 @@
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import (QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-                               QVBoxLayout, QWidget, QScrollArea)
+from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
+                               QVBoxLayout, QWidget)
 
 from pynetix.other.icons import Icon
 
@@ -14,17 +14,17 @@ class FoldWidget(QWidget):
         self.bar = None
         self.body = None
 
-        self._init_layout()
-        self._init_bar(label)
-        self._init_body(widget)
+        self._initLayout()
+        self._initBar(label)
+        self._initBody(widget)
 
-        self.prev_height = self.height()
+        self.prevHeight = self.height()
 
     @property
-    def is_folded(self) -> bool:
-        return self.bar.is_folded
+    def isFolded(self) -> bool:
+        return self.bar.isFolded
 
-    def get_sidebar(self):
+    def getSidebar(self):
         return self.parent().parent()
 
     def fold(self) -> None:
@@ -33,9 +33,9 @@ class FoldWidget(QWidget):
     def unfold(self) -> None:
         self.bar.unfold()
 
-    @is_folded.setter
-    def is_folded(self, folded: bool) -> None:
-        self.bar.is_folded = folded
+    @isFolded.setter
+    def isFolded(self, folded: bool) -> None:
+        self.bar.isFolded = folded
 
     def setMinimumHeight(self, value: int) -> None:
         super().setMinimumHeight(self.bar.height() + value)
@@ -45,19 +45,19 @@ class FoldWidget(QWidget):
         super().setMaximumHeight(self.bar.height() + value)
         self.body.setMaximumHeight(value)
 
-    def _init_layout(self) -> None:
+    def _initLayout(self) -> None:
         layout = QVBoxLayout()
         self.setLayout(layout)
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
 
-    def _init_bar(self, label) -> None:
+    def _initBar(self, label) -> None:
         self.bar = FoldWidgetBar(label)
         self.layout().addWidget(self.bar)
 
         self.bar.folding.connect(self.folding.emit)
 
-    def _init_body(self, widget) -> None:
+    def _initBody(self, widget) -> None:
         self.body = widget
         #scroll = QScrollArea(self.body)
         self.layout().addWidget(self.body)
@@ -76,43 +76,43 @@ class FoldWidgetBar(QWidget):
         self.label = None
         self.button = None
 
-        self.is_folded = False
+        self.isFolded = False
 
-        self._init_layout()
-        self._init_label(label)
-        self._init_button()
+        self._initLayout()
+        self._initLabel(label)
+        self._initButton()
 
-    def get_sidebar(self):
-        return self.parent().get_sidebar()
+    def getSidebar(self):
+        return self.parent().getSidebar()
 
     def fold(self) -> None:
-        if not self.get_sidebar().is_folding_possible():
+        if not self.getSidebar().isFoldingPossible():
             return
 
-        self.is_folded = True
+        self.isFolded = True
 
         self.button.clicked.disconnect(self.fold)
         self.label.clicked.disconnect(self.fold)
         self.button.clicked.connect(self.unfold)
         self.label.clicked.connect(self.unfold)
 
-        self.button.setIcon(Icon.get_icon('Arrow Right'))
+        self.button.setIcon(Icon.getIcon('Arrow Right'))
 
         self.folding.emit()
 
     def unfold(self) -> None:
-        self.is_folded = False
+        self.isFolded = False
 
         self.button.clicked.disconnect(self.unfold)
         self.label.clicked.disconnect(self.unfold)
         self.button.clicked.connect(self.fold)
         self.label.clicked.connect(self.fold)
 
-        self.button.setIcon(Icon.get_icon('Arrow Down'))
+        self.button.setIcon(Icon.getIcon('Arrow Down'))
 
         self.folding.emit()
 
-    def _init_layout(self) -> None:
+    def _initLayout(self) -> None:
         layout = QHBoxLayout()
         self.setLayout(layout)
         layout.setSpacing(0)
@@ -120,7 +120,7 @@ class FoldWidgetBar(QWidget):
         self.setSizePolicy(QSizePolicy.Policy.Preferred,
                            QSizePolicy.Policy.Minimum)
 
-    def _init_label(self, label: str) -> None:
+    def _initLabel(self, label: str) -> None:
         self.label = QPushButton('  ' + label)
         self.label.setSizePolicy(QSizePolicy.Policy.Expanding,
                                  QSizePolicy.Policy.Minimum)
@@ -129,9 +129,9 @@ class FoldWidgetBar(QWidget):
 
         self.label.clicked.connect(self.fold)
 
-    def _init_button(self) -> None:
+    def _initButton(self) -> None:
         self.button = QPushButton()
-        self.button.setIcon(Icon.get_icon('Arrow Down'))
+        self.button.setIcon(Icon.getIcon('Arrow Down'))
         self.button.setSizePolicy(QSizePolicy.Policy.Minimum,
                                   QSizePolicy.Policy.Minimum)
         self.layout().insertWidget(0, self.button)

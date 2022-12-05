@@ -1,8 +1,12 @@
+from logging import getLogger
+
+from PySide6.QtGui import QAction
 from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import QMainWindow, QStatusBar, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QMainWindow, QStatusBar, QVBoxLayout, QWidget, QMenu, QTabBar
 
 from pynetix import __project__
 from pynetix.maintab import MainTab
+from pynetix.preferencestab import PreferencesTab
 from pynetix.widgets.tabwidget import TabWidget
 
 
@@ -16,37 +20,91 @@ class MainWindow(QMainWindow):
         self.statusbar = None
         self.tabwidget = None
         self.layout = None
+        self.preferences = None
+        self.actions = {}
 
-        self._init_layout()
-        self._init_central_widget()
-        self._init_statusbar()
-        self._init_tabwidget()
+        self._initLayout()
+        self._initCentralWidget()
+        self._initStatusbar()
+        self._initTabwidget()
+        self._initMenu()
 
-        self.read_settings()
+        self.readSettings()
 
-    def read_settings(self) -> None:
+    def readSettings(self) -> None:
         settings = QSettings()
         self.move(settings.value('mainwindow/position'))
         self.resize(settings.value('mainwindow/size'))
 
-    def _init_layout(self) -> None:
+    def removeTab(self, i: int) -> None:
+        if isinstance(self.tabwidget.widget(i), PreferencesTab):
+            self.preferences = None
+
+        self.tabwidget.removeTab(i)
+
+    def _initLayout(self) -> None:
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-    def _init_statusbar(self) -> None:
+    def _initStatusbar(self) -> None:
         self.statusbar = QStatusBar()
         self.setStatusBar(self.statusbar)
 
-    def _init_tabwidget(self) -> None:
+    def _initTabwidget(self) -> None:
         self.tabwidget = TabWidget()
+        self.tabwidget.setTabsClosable(True)
+        self.tabwidget.tabBar().tabCloseRequested.connect(self.removeTab)
         self.tabwidget.addTab(MainTab(), 'Main Tab')
+
+        # hide the close button on first tab to make uncloseable
+        if (button := self.tabwidget.tabBar().tabButton(0, QTabBar.ButtonPosition.LeftSide)) is not None:
+            button.hide()
+        elif (button := self.tabwidget.tabBar().tabButton(0, QTabBar.ButtonPosition.RightSide)) is not None:
+            button.hide()
 
         self.layout.addWidget(self.tabwidget)
 
-    def _init_central_widget(self) -> None:
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        central_widget.setLayout(self.layout)
+    def _initCentralWidget(self) -> None:
+        centralWidget = QWidget()
+        self.setCentralWidget(centralWidget)
+        centralWidget.setLayout(self.layout)
+
+    def _initMenu(self) -> None:
+        appMenu = QMenu('Pynetix')
+        fileMenu = QMenu('File')
+        helpMenu = QMenu('Help')
+
+        updateAction = QAction('Check for Updates...')
+        updateAction.setMenuRole(QAction.MenuRole.ApplicationSpecificRole)
+        updateAction.triggered.connect(self.notImplemented)
+        appMenu.addAction(updateAction)
+        self.actions.update({'update': updateAction})
+
+        aboutAction = QAction('About Pynetix')
+        aboutAction.setMenuRole(QAction.MenuRole.AboutQtRole)
+        aboutAction.triggered.connect(self.notImplemented)
+        appMenu.addAction(aboutAction)
+        self.actions.update({'about': aboutAction})
+
+        preferencesAction = QAction('About Pynetix')
+        preferencesAction.setMenuRole(QAction.MenuRole.PreferencesRole)
+        preferencesAction.triggered.connect(self.openPreferences)
+        appMenu.addAction(preferencesAction)
+        self.actions.update({'preferences': preferencesAction})
+
+        self.menuBar().addMenu(appMenu)
+        self.menuBar().addMenu(fileMenu)
+        self.menuBar().addMenu(helpMenu)
+
+    def notImplemented(self) -> None:
+        getLogger(__project__).warning('Feature not implemented yet. ごめん', 5)
+
+    def openPreferences(self) -> None:
+        if self.preferences is None:
+            self.preferences = PreferencesTab()
+            self.tabwidget.addTab(self.preferences, 'Preferences')
+
+        self.tabwidget.setCurrentWidget(self.preferences)
 
     def closeEvent(self, event) -> None:
         settings = QSettings()

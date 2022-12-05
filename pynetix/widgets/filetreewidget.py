@@ -9,27 +9,27 @@ class FileTreeWidget(FoldWidget):
         self.model = None
         self.view = None
 
-        self._init_model()
-        self._init_view()
+        self._initModel()
+        self._initView()
 
         super().__init__(self.view, 'File Tree')
 
-        if 'path/project_dir' in QSettings().allKeys():
-            path = QSettings().value('path/project_dir')
+        if 'path/projectDir' in QSettings().allKeys():
+            path = QSettings().value('path/projectDir')
         else:
             pass
         path = Path.home()
-        self.change_path(path)
+        self.changePath(path)
 
-    def change_path(self, path):
+    def changePath(self, path):
         path = str(path)
         self.model.setRootPath(path)
         self.view.setRootIndex(self.model.index(self.model.rootPath()))
 
-    def _init_model(self) -> None:
+    def _initModel(self) -> None:
         self.model = QFileSystemModel()
 
-    def _init_view(self) -> None:
+    def _initView(self) -> None:
         self.view = QTreeView()
         self.view.setModel(self.model)
         self.view.hideColumn(1)
@@ -42,5 +42,5 @@ class FileTreeWidget(FoldWidget):
 
     def closeEvent(self, event) -> None:
         path = self.model.rootPath()
-        QSettings().setValue('path/project_dir', path)
+        QSettings().setValue('path/projectDir', path)
         return super().closeEvent(event)

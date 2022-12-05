@@ -10,14 +10,14 @@ class Colourscheme:
     _colour = {}
 
     @staticmethod
-    def update_colour_scheme(theme: str) -> None:
+    def updateColourScheme(theme: str) -> None:
         try:
             with open(__resources__ / 'colourschemes' / f'{theme}.json') as f:
                 Colourscheme._colour = json.load(f)
         except FileNotFoundError:
             print(
-                f'Chosen theme "{theme}" does not exist. Fallback to "basic".')
-            Colourscheme.update_colour_scheme('basic')
+                f'Chosen theme "{theme}" does not exist. Fallback to "default".')
+            Colourscheme.updateColourScheme('default')
 
     def __delitem__(self, key: str) -> None:
         del Colourscheme._colour[key]

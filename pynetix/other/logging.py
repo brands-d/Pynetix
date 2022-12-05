@@ -8,36 +8,36 @@ class StatusBarHandler(Handler):
 
     def __init__(self, statusbar, *args) -> None:
         self.statusbar = statusbar
-        self.last_message = {'level': 'INFO'}
+        self.lastMessage = {'level': 'INFO'}
 
         super().__init__(*args)
 
     def emit(self, record) -> None:
 
-        last_level = self.last_message['level']
+        lastLevel = self.lastMessage['level']
         level = record.levelname
-        pass_message = False
+        passMessage = False
         if level == 'ERROR':
-            pass_message = True
-        elif level == 'WARNING' and last_level != 'ERROR':
-            pass_message = True
-        elif level == 'INFO' and last_level == 'INFO':
-            pass_message = True
+            passMessage = True
+        elif level == 'WARNING' and lastLevel != 'ERROR':
+            passMessage = True
+        elif level == 'INFO' and lastLevel == 'INFO':
+            passMessage = True
 
-        if not pass_message:
+        if not passMessage:
             # check if long enough ago
-            time_passed = (datetime.now() -
-                           self.last_message['time']).total_seconds()
-            if time_passed > self.last_message['duration']:
-                pass_message = True
+            timePassed = (datetime.now() -
+                           self.lastMessage['time']).total_seconds()
+            if timePassed > self.lastMessage['duration']:
+                passMessage = True
 
-        if pass_message:
+        if passMessage:
             duration = record.args[0] if record.args else 0
             style, message = self.format(record)
 
             self.statusbar.setStyleSheet(style)
             self.statusbar.showMessage(message)
-            self.last_message.update(
+            self.lastMessage.update(
                 {'message': message, 'duration': duration, 'level': record.levelname,
                  'time': datetime.now()})
 

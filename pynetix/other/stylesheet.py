@@ -11,16 +11,16 @@ class Style:
               'QSplitter Hover': 'splitter_hover'}
 
     @staticmethod
-    def get_style(name: str) -> str:
+    def getStyle(name: str) -> str:
         directory = __resources__ / 'stylesheets'
-        user_file = directory / f'{Style.styles[name]}_user.qss'
-        default_file = directory / f'{Style.styles[name]}.qss'
+        userFile = directory / f'{Style.styles[name]}_user.qss'
+        defaultFile = directory / f'{Style.styles[name]}.qss'
 
-        if exists(user_file):
-            with open(user_file, 'r') as f:
+        if exists(userFile):
+            with open(userFile, 'r') as f:
                 sheet = f.read()
         else:
-            with open(default_file, 'r') as f:
+            with open(defaultFile, 'r') as f:
                 sheet = f.read()
 
         for colour in Colour:

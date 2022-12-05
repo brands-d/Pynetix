@@ -16,62 +16,62 @@ class MainTab(QWidget):
         self.splitter = None
         self.filetree = None
         self.tools = None
-        self.meta_data = None
+        self.metaData = None
 
-        self._init_layout()
-        self._init_splitter()
-        self._init_sidebar()
-        self._init_filetree()
-        self._init_tools()
-        self._init_metadata()
-        self._init_plotarea()
+        self._initLayout()
+        self._initSplitter()
+        self._initSidebar()
+        self._initFiletree()
+        self._initTools()
+        self._initMetadata()
+        self._initPlotarea()
 
-        self.read_settings()
-        self.sidebar.read_settings()
+        self.readSettings()
+        self.sidebar.readSettings()
 
-    def read_settings(self) -> None:
-        if 'maintab/splitter_sizes' in QSettings().allKeys():
-            sizes = QSettings().value('maintab/splitter_sizes')
+    def readSettings(self) -> None:
+        if 'maintab/splitterSizes' in QSettings().allKeys():
+            sizes = QSettings().value('maintab/splitterSizes')
             # size is saved as str in some OS
             sizes = [int(size) for size in sizes]
             self.splitter.setSizes(sizes)
 
-    def _init_layout(self) -> None:
+    def _initLayout(self) -> None:
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-    def _init_splitter(self) -> None:
+    def _initSplitter(self) -> None:
         self.splitter = Splitter()
         self.splitter.setHandleWidth(0)
         self.layout().addWidget(self.splitter)
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.splitter.setChildrenCollapsible(True)
 
-    def _init_plotarea(self) -> None:
+    def _initPlotarea(self) -> None:
         self.plotarea = QWidget()
         self.plotarea.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.splitter.addWidget(self.plotarea)
 
-    def _init_sidebar(self) -> None:
+    def _initSidebar(self) -> None:
         self.sidebar = SideBar()
         self.splitter.addWidget(self.sidebar)
 
-    def _init_filetree(self) -> None:
+    def _initFiletree(self) -> None:
         self.filetree = FileTreeWidget()
         self.sidebar.addWidget(self.filetree)
 
-    def _init_tools(self) -> None:
+    def _initTools(self) -> None:
         self.tools = FoldWidget(QWidget(), 'Tools')
         self.sidebar.addWidget(self.tools)
 
-    def _init_metadata(self) -> None:
-        self.meta_data = FoldWidget(QWidget(), 'Meta Data')
-        self.sidebar.addWidget(self.meta_data)
+    def _initMetadata(self) -> None:
+        self.metaData = FoldWidget(QWidget(), 'Meta Data')
+        self.sidebar.addWidget(self.metaData)
 
     def closeEvent(self, event):
-        QSettings().setValue('maintab/splitter_sizes', self.splitter.sizes())
+        QSettings().setValue('maintab/splitterSizes', self.splitter.sizes())
 
         self.sidebar.closeEvent(event)
         self.filetree.closeEvent(event)

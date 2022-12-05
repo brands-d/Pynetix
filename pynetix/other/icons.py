@@ -13,13 +13,13 @@ class Icon:
              'Arrow Right': 'right_arrow.svg'}
 
     @staticmethod
-    def get_icon(name: str):
+    def getIcon(name: str):
         directory = __resources__ / 'icons' / 'coloured'
-        icon_path = str(directory / Icon.icons[name])
+        iconPath = str(directory / Icon.icons[name])
 
-        if path.isfile(icon_path):
+        if path.isfile(iconPath):
             try:
-                icon = QIcon(icon_path)
+                icon = QIcon(iconPath)
             except ValueError:
                 getLogger(__project__).warning(f'Icon "{name}" not readable.')
                 icon = QIcon()
@@ -30,26 +30,26 @@ class Icon:
         return icon
 
     @staticmethod
-    def update_colours():
-        directory_coloured = __resources__ / 'icons' / 'coloured'
-        directory_raw = __resources__ / 'icons' / 'raw'
+    def updateColours():
+        directoryColoured = __resources__ / 'icons' / 'coloured'
+        directoryRaw = __resources__ / 'icons' / 'raw'
 
-        if not path.isdir(directory_coloured):
-            mkdir(directory_coloured)
+        if not path.isdir(directoryColoured):
+            mkdir(directoryColoured)
 
         for icon in Icon.icons.values():
             try:
-                remove(directory_coloured / icon)
+                remove(directoryColoured / icon)
             except FileNotFoundError:
                 pass
 
             try:
-                with open(directory_raw / icon, 'r') as f:
+                with open(directoryRaw / icon, 'r') as f:
                     content = f.read()
             except FileNotFoundError:
                 getLogger(__project__).warning(f'Icon "{icon}" not found.')
             else:
                 for colour in Colour:
                     content = content.replace(fr'$({colour})', Colour[colour])
-                with open(directory_coloured / icon, 'w') as f:
+                with open(directoryColoured / icon, 'w') as f:
                     f.write(content)

@@ -9,11 +9,11 @@ class Task(QThread):
         self.result = None
 
     def start(self) -> None:
-        QApplication.instance().add_task(self)
+        QApplication.instance().addTask(self)
         super().start()
 
     def quit(self) -> None:
-        QApplication.instance().remove_task(self)
+        QApplication.instance().removeTask(self)
         super().quit()
 
     def run(self) -> None:

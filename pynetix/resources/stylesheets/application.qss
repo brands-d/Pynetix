@@ -54,6 +54,11 @@ QScrollBar::handle:hover{
     background-color: $(LIGHT_GRAY);
 }
 
+.Subtitle {
+    font-weight: bold;
+    font-size: 18px;
+}
+
 /* Test purposes 
 
 .QWidget{
