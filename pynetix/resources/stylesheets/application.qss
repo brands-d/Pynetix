@@ -27,11 +27,21 @@ QPushButton{
     background-color: $(GRAY);
     border: 0px;
     padding: 3px;
+    padding-top: 5px;
+    text-align:left;
+}
+
+QLineEdit{
+    background-color: $(GRAY);
+    border: 0px;
+    padding: 3px;
     text-align:left;
 }
 
 QLabel{
-    padding: 3px;
+    padding: 0px;
+    padding-bottom: 4px;
+    qproperty-indent:0;
 }
 
 QTreeView::item:hover{
@@ -40,6 +50,10 @@ QTreeView::item:hover{
 
 QTreeView::item:selected{
     background-color: $(LIGHT_BLUEISH_GRAY);
+}
+
+QFrame{
+    border: 0px;
 }
 
 QScrollBar{
@@ -57,6 +71,16 @@ QScrollBar::handle:hover{
 .Subtitle {
     font-weight: bold;
     font-size: 18px;
+    padding-bottom: 8px;
+}
+
+QComboBox{
+    padding: 4px;
+    background-color: $(GRAY);
+}
+
+QComboBox::drop-down:button{
+    width: 25px;
 }
 
 /* Test purposes 

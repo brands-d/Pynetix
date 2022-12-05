@@ -24,8 +24,6 @@ class SideBar(QWidget):
         self.animation.finished.connect(self._sizeChangeFinished)
         self.animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
 
-        self.updateStyle()
-
     def addWidget(self, widget: QWidget) -> None:
         self.splitter.addWidget(widget)
         widget.folding.connect(lambda: self.initiateFolding(widget))
@@ -69,9 +67,6 @@ class SideBar(QWidget):
             self.animation.setEndValue(widget.prevHeight)
 
         self.animation.start()
-
-    def updateStyle(self) -> None:
-        self.setStyleSheet(Style.getStyle('SideBar'))
 
     def readSettings(self) -> None:
         try:

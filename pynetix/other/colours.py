@@ -1,4 +1,6 @@
 import json
+from pathlib import Path
+from os import listdir
 
 from pynetix import __resources__
 
@@ -19,6 +21,20 @@ class Colourscheme:
                 f'Chosen theme "{theme}" does not exist. Fallback to "default".')
             Colourscheme.updateColourScheme('default')
 
+    @staticmethod
+    def listThemes() -> None:
+        availableThemes = []
+        for file in listdir(str(__resources__ / 'colourschemes')):
+            try:
+                with open(__resources__ / 'colourschemes' / file, 'r') as f:
+                    json.load(f)
+            except ValueError:
+                pass
+            else:
+                availableThemes.append(Path(file).stem)
+        
+        return tuple(availableThemes)
+
     def __delitem__(self, key: str) -> None:
         del Colourscheme._colour[key]
 
@@ -29,10 +45,9 @@ class Colourscheme:
         Colourscheme._colour.update({key: value})
 
     def __iter__(self):
-        return Colour._colour.__iter__()
+        return Colourscheme._colour.__iter__()
 
     def __next__(self):
-        return Colour._colour.__next__()
-
+        return Colourscheme._colour.__next__()
 
 Colour = Colourscheme()

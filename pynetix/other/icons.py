@@ -30,6 +30,17 @@ class Icon:
         return icon
 
     @staticmethod
+    def getIconPath(name: str) -> str:
+        directory = __resources__ / 'icons' / 'coloured'
+        iconPath = str(directory / Icon.icons[name])
+
+        if path.isfile(iconPath):
+            return iconPath
+        else:
+            getLogger(__project__).warning(f'Icon "{name}" not found.')
+            return ''
+
+    @staticmethod
     def updateColours():
         directoryColoured = __resources__ / 'icons' / 'coloured'
         directoryRaw = __resources__ / 'icons' / 'raw'

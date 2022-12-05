@@ -15,10 +15,9 @@ class FileTreeWidget(FoldWidget):
         super().__init__(self.view, 'File Tree')
 
         if 'path/projectDir' in QSettings().allKeys():
-            path = QSettings().value('path/projectDir')
+            path = Path(QSettings().value('path/projectDir'))
         else:
-            pass
-        path = Path.home()
+            path = Path.home()
         self.changePath(path)
 
     def changePath(self, path):
