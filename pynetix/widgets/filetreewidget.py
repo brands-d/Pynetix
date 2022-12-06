@@ -1,6 +1,8 @@
 from pathlib import Path
+
 from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QFileSystemModel, QTreeView
+
 from pynetix.widgets.foldwidget import FoldWidget
 
 
@@ -20,8 +22,8 @@ class FileTreeWidget(FoldWidget):
             path = Path.home()
         self.changePath(path)
 
-    def changePath(self, path):
-        path = str(path)
+    def changePath(self, path) -> None:
+        path = str(Path(path))
         self.model.setRootPath(path)
         self.view.setRootIndex(self.model.index(self.model.rootPath()))
 
@@ -35,11 +37,9 @@ class FileTreeWidget(FoldWidget):
         self.view.hideColumn(2)
         self.view.hideColumn(3)
         self.view.setHeaderHidden(True)
-        
+
         # root path should be set in settings only
         # self.view.doubleClicked.connect(self._item_double_clicked)
 
     def closeEvent(self, event) -> None:
-        path = self.model.rootPath()
-        QSettings().setValue('path/projectDir', path)
         return super().closeEvent(event)

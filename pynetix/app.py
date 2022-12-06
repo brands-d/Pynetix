@@ -53,7 +53,14 @@ class App(QApplication):
                 settings.setValue(key, defaults.value(key))
 
     def updateColours(self) -> None:
-        Colour.updateColourScheme(QSettings().value('colours/theme'))
+        theme = QSettings().value('colour/theme')
+        try:
+            Colour.updateColourScheme(theme)
+        except ValueError:
+            print(
+                f'Chosen theme "{theme}" does not exist. Fallback to "default".')
+            Colour.updateColourScheme('default')
+            QSettings().setValue('colour/theme', 'default')
 
     def updateStyle(self) -> None:
         self.setStyleSheet(Style.getStyle('Application'))

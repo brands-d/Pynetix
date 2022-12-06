@@ -1,17 +1,21 @@
+from logging import getLogger
 from os import path
 from pathlib import Path
 
-from PySide6.QtCore import QSettings, Qt
-from PySide6.QtWidgets import (QHBoxLayout, QVBoxLayout, QLabel, QCheckBox, QLineEdit,
-                               QComboBox, QSizePolicy, QWidget, QSpacerItem, QPushButton)
+from PySide6.QtCore import QSettings, Qt, Signal
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
+                               QLineEdit, QPushButton, QSizePolicy,
+                               QSpacerItem, QVBoxLayout, QWidget)
 
-from pynetix.widgets.splitter import Splitter
-from pynetix.other.lib import QBoolToBool
+from pynetix import __project__
 from pynetix.other.colours import Colour
 from pynetix.other.icons import Icon
+from pynetix.other.lib import QBoolToBool
+from pynetix.widgets.splitter import Splitter
 
 
 class PreferencesTab(QWidget):
+    settingChanged = Signal(str, str)
 
     settings = {'update': {'name': 'checkUpdate',
                            'group': 'remote',
@@ -62,9 +66,16 @@ class PreferencesTab(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.settings.setLayout(layout)
 
-        layout.addWidget(CheckBoxSetting(PreferencesTab.settings['update']))
-        layout.addWidget(ThemeSetting(PreferencesTab.settings['theme']))
-        layout.addWidget(PathSetting(PreferencesTab.settings['project']))
+        setting = CheckBoxSetting(PreferencesTab.settings['update'])
+        setting.changed.connect(self.settingChanged.emit)
+        layout.addWidget(setting)
+        setting = ThemeSetting(PreferencesTab.settings['theme'])
+        setting.changed.connect(self.settingChanged.emit)
+        layout.addWidget(setting)
+        setting = PathSetting(PreferencesTab.settings['project'])
+        setting.changed.connect(self.settingChanged.emit)
+        layout.addWidget(setting)
+
         layout.addSpacerItem(QSpacerItem(0, 0,
                                          QSizePolicy.Policy.Minimum,
                                          QSizePolicy.Policy.Expanding))
@@ -75,6 +86,7 @@ class PreferencesTab(QWidget):
 
 
 class Setting(QWidget):
+    changed = Signal(str, str)
 
     def __init__(self, info) -> None:
         self.info = info
@@ -86,8 +98,11 @@ class Setting(QWidget):
         return QSettings().value(self.info['group'] + '/' + self.info['name'])
 
     def writeSetting(self, value):
-        QSettings().setValue(
-            self.info['group'] + '/' + self.info['name'], value)
+        setting = self.info['group'] + '/' + self.info['name']
+        getLogger(__project__).info(
+            f'Saved preference for "{setting}" as "{value}".')
+        QSettings().setValue(setting, value)
+        self.changed.emit(setting, value)
 
     def _initLayout(self, layout) -> None:
         self.setLayout(layout)
@@ -161,7 +176,6 @@ class ComboBoxSetting(Setting):
             if value == self.readSetting():
                 self.comboBox.setCurrentIndex(i)
 
-        self.writeSetting()  # if theme had to fall back on default, make this setting
         self.comboBox.currentIndexChanged.connect(self.writeSetting)
 
         layout = QHBoxLayout()
@@ -192,8 +206,9 @@ class PathSetting(Setting):
         self._initLineEdit()
 
     def writeSetting(self, value) -> None:
-        if path.exists(Path(value)):
-            super().writeSetting(value)
+        dir_ = Path(value)
+        if path.exists(dir_):
+            super().writeSetting(str(dir_))
 
     def _initLayout(self) -> None:
         super()._initLayout(QVBoxLayout())

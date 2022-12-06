@@ -36,6 +36,10 @@ class MainTab(QWidget):
             sizes = [int(size) for size in sizes]
             self.splitter.setSizes(sizes)
 
+    def settingChanged(self, setting: str, value: str) -> None:
+        if setting == 'path/projectDir':
+            self.filetree.changePath(value)
+
     def _initLayout(self) -> None:
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)

@@ -17,9 +17,7 @@ class Colourscheme:
             with open(__resources__ / 'colourschemes' / f'{theme}.json') as f:
                 Colourscheme._colour = json.load(f)
         except FileNotFoundError:
-            print(
-                f'Chosen theme "{theme}" does not exist. Fallback to "default".')
-            Colourscheme.updateColourScheme('default')
+            raise ValueError
 
     @staticmethod
     def listThemes() -> None:

@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
 
         self.statusbar = None
         self.tabwidget = None
+        self.mainTab = None
         self.layout = None
         self.preferences = None
         self.actions = {}
@@ -52,9 +53,10 @@ class MainWindow(QMainWindow):
 
     def _initTabwidget(self) -> None:
         self.tabwidget = TabWidget()
+        self.mainTab = MainTab()
         self.tabwidget.setTabsClosable(True)
         self.tabwidget.tabBar().tabCloseRequested.connect(self.removeTab)
-        self.tabwidget.addTab(MainTab(), 'Main Tab')
+        self.tabwidget.addTab(self.mainTab, 'Main Tab')
 
         # hide the close button on first tab to make uncloseable
         if (button := self.tabwidget.tabBar().tabButton(0, QTabBar.ButtonPosition.LeftSide)) is not None:
@@ -105,6 +107,7 @@ class MainWindow(QMainWindow):
             self.tabwidget.addTab(self.preferences, 'Preferences')
 
         self.tabwidget.setCurrentWidget(self.preferences)
+        self.preferences.settingChanged.connect(self.mainTab.settingChanged)
 
     def closeEvent(self, event) -> None:
         settings = QSettings()
