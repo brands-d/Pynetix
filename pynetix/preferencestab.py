@@ -213,7 +213,8 @@ class PathSetting(Setting):
     def _fileDialog(self) -> None:
         dir_ = QFileDialog.getExistingDirectory(
             None, 'Open Project Directory', self.readSetting(), QFileDialog.Option.ShowDirsOnly)
-        self.lineEdit.setText(dir_)
+        if dir_:
+            self.lineEdit.setText(dir_)
 
     def _initLayout(self) -> None:
         super()._initLayout(QVBoxLayout())
