@@ -2,7 +2,8 @@ from logging import getLogger
 
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import QMainWindow, QStatusBar, QVBoxLayout, QWidget, QMenu, QTabBar
+from PySide6.QtWidgets import (QMainWindow, QStatusBar, QVBoxLayout,
+                               QWidget, QMenu, QTabBar, QApplication)
 
 from pynetix import __project__
 from pynetix.maintab import MainTab
@@ -78,7 +79,7 @@ class MainWindow(QMainWindow):
 
         updateAction = QAction('Check for Updates...')
         updateAction.setMenuRole(QAction.MenuRole.ApplicationSpecificRole)
-        updateAction.triggered.connect(self.notImplemented)
+        updateAction.triggered.connect(QApplication.instance().checkForUpdates)
         appMenu.addAction(updateAction)
         self.actions.update({'update': updateAction})
 
