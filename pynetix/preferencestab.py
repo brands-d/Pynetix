@@ -5,7 +5,7 @@ from pathlib import Path
 from PySide6.QtCore import QSettings, Qt, Signal
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
                                QLineEdit, QPushButton, QSizePolicy,
-                               QSpacerItem, QVBoxLayout, QWidget)
+                               QSpacerItem, QVBoxLayout, QWidget, QFileDialog)
 
 from pynetix import __project__
 from pynetix.other.colours import Colour
@@ -210,6 +210,11 @@ class PathSetting(Setting):
         if path.exists(dir_):
             super().writeSetting(str(dir_))
 
+    def _fileDialog(self) -> None:
+        dir_ = QFileDialog.getExistingDirectory(
+            None, 'Open Project Directory', self.readSetting(), QFileDialog.Option.ShowDirsOnly)
+        self.lineEdit.setText(dir_)
+
     def _initLayout(self) -> None:
         super()._initLayout(QVBoxLayout())
 
@@ -217,9 +222,9 @@ class PathSetting(Setting):
 
         self.lineEdit = QLineEdit()
         self.lineEdit.setText(self.readSetting())
-        self.lineEdit.textEdited.connect(self.writeSetting)
+        self.lineEdit.textChanged.connect(self.writeSetting)
         self.button = QPushButton(' ... ')
-
+        self.button.clicked.connect(self._fileDialog)
         layout = QHBoxLayout()
         layout.addWidget(self.lineEdit)
         layout.addWidget(self.button)
