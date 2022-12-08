@@ -1,11 +1,10 @@
-from logging import getLogger
-
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import (QMainWindow, QStatusBar, QVBoxLayout,
+from PySide6.QtWidgets import (QMainWindow, QStatusBar, QVBoxLayout, QMessageBox,
                                QWidget, QMenu, QTabBar, QApplication)
 
 from pynetix import __project__
+from pynetix.other.texts import Text
 from pynetix.maintab import MainTab
 from pynetix.preferencestab import PreferencesTab
 from pynetix.widgets.tabwidget import TabWidget
@@ -43,6 +42,18 @@ class MainWindow(QMainWindow):
             self.preferences = None
 
         self.tabwidget.removeTab(i)
+
+    def openAbout(self) -> None:
+        text = Text.get('about')
+        QMessageBox().about(None, 'Pynetix', text)
+
+    def openPreferences(self) -> None:
+        if self.preferences is None:
+            self.preferences = PreferencesTab()
+            self.tabwidget.addTab(self.preferences, 'Preferences')
+
+        self.tabwidget.setCurrentWidget(self.preferences)
+        self.preferences.settingChanged.connect(self.mainTab.settingChanged)
 
     def _initLayout(self) -> None:
         self.layout = QVBoxLayout()
@@ -85,7 +96,7 @@ class MainWindow(QMainWindow):
 
         aboutAction = QAction('About Pynetix')
         aboutAction.setMenuRole(QAction.MenuRole.AboutQtRole)
-        aboutAction.triggered.connect(self.notImplemented)
+        aboutAction.triggered.connect(self.openAbout)
         appMenu.addAction(aboutAction)
         self.actions.update({'about': aboutAction})
 
@@ -98,17 +109,6 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(appMenu)
         self.menuBar().addMenu(fileMenu)
         self.menuBar().addMenu(helpMenu)
-
-    def notImplemented(self) -> None:
-        getLogger(__project__).warning('Feature not implemented yet. ごめん', 5)
-
-    def openPreferences(self) -> None:
-        if self.preferences is None:
-            self.preferences = PreferencesTab()
-            self.tabwidget.addTab(self.preferences, 'Preferences')
-
-        self.tabwidget.setCurrentWidget(self.preferences)
-        self.preferences.settingChanged.connect(self.mainTab.settingChanged)
 
     def closeEvent(self, event) -> None:
         settings = QSettings()
