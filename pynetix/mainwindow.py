@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (QMainWindow, QStatusBar, QVBoxLayout, QMessageBox
                                QWidget, QMenu, QTabBar, QApplication)
 
 from pynetix import __project__
-from pynetix.other.texts import Text
+from pynetix.resources.resources import Resource
 from pynetix.maintab import MainTab
 from pynetix.preferencestab import PreferencesTab
 from pynetix.widgets.tabwidget import TabWidget
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.tabwidget.removeTab(i)
 
     def openAbout(self) -> None:
-        text = Text.get('about')
+        text = Resource.getText('about')
         QMessageBox().about(None, 'Pynetix', text)
 
     def openPreferences(self) -> None:

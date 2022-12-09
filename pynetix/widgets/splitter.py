@@ -1,7 +1,7 @@
 from PySide6.QtCore import QEvent, QTimer
 from PySide6.QtWidgets import QSplitter
 
-from pynetix.other.stylesheet import Style
+from pynetix.resources.resources import Resource
 
 
 class Splitter(QSplitter):
@@ -34,13 +34,13 @@ class Splitter(QSplitter):
         elif event.type() == QEvent.Type.Leave:
             self.mouseOn = None
             handler.setDisabled(True)
-            handler.splitter().setStyleSheet(Style.getStyle('QSplitter Base'))
+            handler.splitter().setStyleSheet(Resource.getStyle('QSplitter Base'))
 
         return super().eventFilter(handler, event)
 
     def hovering(self, handler):
         if self.mouseOn is not None:
-            handler.splitter().setStyleSheet(Style.getStyle('QSplitter Hover'))
+            handler.splitter().setStyleSheet(Resource.getStyle('QSplitter Hover'))
 
     def getHandlerIndex(self, handler):
         for i in range(self.count()):

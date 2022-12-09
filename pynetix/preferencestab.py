@@ -8,8 +8,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QHBoxLayout, QLabel,
                                QSpacerItem, QVBoxLayout, QWidget, QFileDialog)
 
 from pynetix import __project__
-from pynetix.other.colours import Colour
-from pynetix.other.icons import Icon
+from pynetix.resources.resources import Resource
 from pynetix.other.lib import QBoolToBool
 from pynetix.widgets.splitter import Splitter
 
@@ -170,7 +169,7 @@ class ComboBoxSetting(Setting):
         self.comboBox = QComboBox()
         self.comboBox.setMinimumContentsLength(25)
         self.comboBox.setStyleSheet(
-            f'QComboBox::down-arrow{{ image: url({Icon.getIconPath("Arrow Down")}); }}')
+            f'QComboBox::down-arrow{{ image: url({Resource.getIconPath("Arrow Down")}); }}')
         for i, value in enumerate(self.info['options']):
             self.comboBox.addItem(value)
             if value == self.readSetting():
@@ -189,7 +188,7 @@ class ComboBoxSetting(Setting):
 class ThemeSetting(ComboBoxSetting):
 
     def _initComboBox(self) -> None:
-        self.info['options'] = Colour.listThemes()
+        self.info['options'] = Resource.listThemes()
         super()._initComboBox()
 
 

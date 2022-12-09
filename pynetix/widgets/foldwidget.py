@@ -2,7 +2,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
                                QVBoxLayout, QWidget)
 
-from pynetix.other.icons import Icon
+from pynetix.resources.resources import Resource
 
 
 class FoldWidget(QWidget):
@@ -96,7 +96,7 @@ class FoldWidgetBar(QWidget):
         self.button.clicked.connect(self.unfold)
         self.label.clicked.connect(self.unfold)
 
-        self.button.setIcon(Icon.getIcon('Arrow Right'))
+        self.button.setIcon(Resource.getIcon('Arrow Right'))
 
         self.folding.emit()
 
@@ -108,7 +108,7 @@ class FoldWidgetBar(QWidget):
         self.button.clicked.connect(self.fold)
         self.label.clicked.connect(self.fold)
 
-        self.button.setIcon(Icon.getIcon('Arrow Down'))
+        self.button.setIcon(Resource.getIcon('Arrow Down'))
 
         self.folding.emit()
 
@@ -131,7 +131,7 @@ class FoldWidgetBar(QWidget):
 
     def _initButton(self) -> None:
         self.button = QPushButton()
-        self.button.setIcon(Icon.getIcon('Arrow Down'))
+        self.button.setIcon(Resource.getIcon('Arrow Down'))
         self.button.setSizePolicy(QSizePolicy.Policy.Minimum,
                                   QSizePolicy.Policy.Minimum)
         self.layout().insertWidget(0, self.button)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from logging import Handler, Formatter
 
-from pynetix.other.colours import Colour
+from pynetix.resources.resources import Resource
 
 
 class StatusBarHandler(Handler):
@@ -27,7 +27,7 @@ class StatusBarHandler(Handler):
         if not passMessage:
             # check if long enough ago
             timePassed = (datetime.now() -
-                           self.lastMessage['time']).total_seconds()
+                          self.lastMessage['time']).total_seconds()
             if timePassed > self.lastMessage['duration']:
                 passMessage = True
 
@@ -52,12 +52,12 @@ class ColoredStatusBarFormatter(Formatter):
         message = f'{time}    {record.msg}'
 
         if record.levelname == 'ERROR':
-            style = f'color: {Colour["RED"]}; font-weight: bold'
+            style = f'color: {Resource.theme["RED"]}; font-weight: bold'
 
         elif record.levelname == 'WARNING':
-            style = f'color: {Colour["ORANGE"]}'
+            style = f'color: {Resource.theme["ORANGE"]}'
 
         else:
-            style = f'color: {Colour["WHITE"]}'
+            style = f'color: {Resource.theme["WHITE"]}'
 
         return style, message

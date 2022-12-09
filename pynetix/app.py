@@ -5,11 +5,9 @@ from PySide6.QtWidgets import QApplication
 
 from pynetix import __project__, __resources__, __version__
 from pynetix.mainwindow import MainWindow
-from pynetix.other.colours import Colour
-from pynetix.other.icons import Icon
+from pynetix.resources.resources import Resource
 from pynetix.other.lib import QBoolToBool
 from pynetix.other.logging import ColoredStatusBarFormatter, StatusBarHandler
-from pynetix.other.stylesheet import Style
 from pynetix.other.worker import Task
 
 
@@ -26,7 +24,6 @@ class App(QApplication):
         self.verifySettings()
         self.updateColours()
         self.updateStyle()
-        self._initIcons()
 
         # declaration of direct children
         self.mainwindow = None
@@ -55,15 +52,15 @@ class App(QApplication):
     def updateColours(self) -> None:
         theme = QSettings().value('colour/theme')
         try:
-            Colour.updateColourScheme(theme)
+            Resource.updateColourScheme(theme)
         except ValueError:
             print(
                 f'Chosen theme "{theme}" does not exist. Fallback to "default".')
-            Colour.updateColourScheme('default')
+            Resource.updateColourScheme('default')
             QSettings().setValue('colour/theme', 'default')
 
     def updateStyle(self) -> None:
-        self.setStyleSheet(Style.getStyle('Application'))
+        self.setStyleSheet(Resource.getStyle('Application'))
 
     def checkForUpdates(self) -> None:
         if QBoolToBool(QSettings().value('remote/checkUpdate')):
@@ -96,9 +93,6 @@ class App(QApplication):
 
     def removeTask(self, task):
         self.tasks.remove(task)
-
-    def _initIcons(self) -> None:
-        Icon.updateColours()
 
     def _initMainwindow(self) -> None:
         self.mainwindow = MainWindow()
