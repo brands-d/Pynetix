@@ -31,7 +31,13 @@ class PreferencesTab(QWidget):
                           'type': 'combobox',
                           'options': None,
                           'short': 'Colour Theme',
-                          'long': 'Colour Theme of the Application.'}}
+                          'long': 'Colour Theme of the Application.'},
+                'activateFilter': {'name': 'activateFileFilter',
+                           'group': 'filetree',
+                           'type': 'checkbox',
+                           'short': 'Activate File Filter',
+                           'long': 'If checked, only files passing the filter set will be displayed in the file tree.'},
+                }
 
     def __init__(self) -> None:
         super().__init__()
@@ -72,6 +78,9 @@ class PreferencesTab(QWidget):
         setting.changed.connect(self.settingChanged.emit)
         layout.addWidget(setting)
         setting = PathSetting(PreferencesTab.settings['project'])
+        setting.changed.connect(self.settingChanged.emit)
+        layout.addWidget(setting)
+        setting = CheckBoxSetting(PreferencesTab.settings['activateFilter'])
         setting.changed.connect(self.settingChanged.emit)
         layout.addWidget(setting)
 
@@ -205,7 +214,7 @@ class PathSetting(Setting):
         self._initLineEdit()
 
     def writeSetting(self, value) -> None:
-        dir_ = Path(value)
+        dir_ = Path.home() if value == '~' else Path(value)
         if path.exists(dir_):
             super().writeSetting(str(dir_))
 

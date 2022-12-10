@@ -4,6 +4,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QFileSystemModel, QTreeView
 
 from pynetix.widgets.foldwidget import FoldWidget
+from pynetix.other.lib import QBoolToBool, QListToList
 
 
 class FileTreeWidget(FoldWidget):
@@ -16,19 +17,22 @@ class FileTreeWidget(FoldWidget):
 
         super().__init__(self.view, 'File Tree')
 
-        if 'path/projectDir' in QSettings().allKeys():
-            path = Path(QSettings().value('path/projectDir'))
-        else:
-            path = Path.home()
-        self.changePath(path)
+        self.changePath(QSettings().value('path/projectDir'))
 
     def changePath(self, path) -> None:
-        path = str(Path(path))
-        self.model.setRootPath(path)
+        path = Path.home() if path == '~' else Path(path)
+        self.model.setRootPath(str(path))
         self.view.setRootIndex(self.model.index(self.model.rootPath()))
+
+    def _itemDoubleClicked(self, index) -> None:
+        print(self.model.filePath(index))
 
     def _initModel(self) -> None:
         self.model = QFileSystemModel()
+        self.model.setNameFilters(QListToList(
+            QSettings().value('filetree/fileFilter')))
+        self.model.setNameFilterDisables(not QBoolToBool(
+            QSettings().value('filetree/activateFileFilter')))
 
     def _initView(self) -> None:
         self.view = QTreeView()
@@ -38,8 +42,10 @@ class FileTreeWidget(FoldWidget):
         self.view.hideColumn(3)
         self.view.setHeaderHidden(True)
 
-        # root path should be set in settings only
-        # self.view.doubleClicked.connect(self._item_double_clicked)
+        self.view.doubleClicked.connect(self._itemDoubleClicked)
 
     def closeEvent(self, event) -> None:
+        QSettings().setValue('filetree/fileFilter', ['*.xlsx'])
+        QSettings().setValue('filetree/activateFileFilter',
+                             not self.model.nameFilterDisables())
         return super().closeEvent(event)
