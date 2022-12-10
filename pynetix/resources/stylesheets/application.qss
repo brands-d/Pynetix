@@ -32,7 +32,7 @@ QPushButton{
 }
 
 QLineEdit{
-    background-color: $(GRAY);
+    background-color: $(BLACK);
     border: 0px;
     padding: 3px;
     text-align:left;
@@ -83,9 +83,9 @@ QComboBox::drop-down:button{
     width: 25px;
 }
 
-/* Test purposes 
+/*Test purposes
 
-.QWidget{
+QWidget{
     border: 1px solid red;
 }
 
@@ -95,4 +95,4 @@ QSplitter{
 
 QLabel{
     border: 1px solid blue;
-}*/
+} */

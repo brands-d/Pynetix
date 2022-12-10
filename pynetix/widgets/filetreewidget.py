@@ -1,13 +1,16 @@
+from os.path import isfile
 from pathlib import Path
 
-from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import QFileSystemModel, QTreeView
+from PySide6.QtCore import QSettings, Signal
+from PySide6.QtWidgets import QFileSystemModel, QTreeView, QSizePolicy
 
 from pynetix.widgets.foldwidget import FoldWidget
 from pynetix.other.lib import QBoolToBool, QListToList
 
 
 class FileTreeWidget(FoldWidget):
+    fileRequested = Signal(str)
+
     def __init__(self) -> None:
         self.model = None
         self.view = None
@@ -25,7 +28,9 @@ class FileTreeWidget(FoldWidget):
         self.view.setRootIndex(self.model.index(self.model.rootPath()))
 
     def _itemDoubleClicked(self, index) -> None:
-        print(self.model.filePath(index))
+        path = self.model.filePath(index)
+        if isfile(path):
+            self.fileRequested.emit(path)
 
     def _initModel(self) -> None:
         self.model = QFileSystemModel()
@@ -43,6 +48,15 @@ class FileTreeWidget(FoldWidget):
         self.view.setHeaderHidden(True)
 
         self.view.doubleClicked.connect(self._itemDoubleClicked)
+
+    def _initBody(self, widget) -> None:
+        self.body = widget
+        scroll = self.body
+        self.layout().addWidget(scroll)
+
+        self.body.setMinimumHeight(50)
+        self.body.setSizePolicy(QSizePolicy.Policy.Preferred,
+                                QSizePolicy.Policy.Expanding)
 
     def closeEvent(self, event) -> None:
         QSettings().setValue('filetree/fileFilter', ['*.xlsx'])

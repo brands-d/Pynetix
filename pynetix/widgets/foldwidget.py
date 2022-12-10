@@ -1,6 +1,6 @@
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (QHBoxLayout, QPushButton, QSizePolicy,
-                               QVBoxLayout, QWidget)
+                               QVBoxLayout, QWidget, QScrollArea)
 
 from pynetix.resources.resources import Resource
 
@@ -59,11 +59,15 @@ class FoldWidget(QWidget):
 
     def _initBody(self, widget) -> None:
         self.body = widget
-        #scroll = QScrollArea(self.body)
-        self.layout().addWidget(self.body)
+        scroll = QScrollArea(self)
+        scroll.setWidget(self.body)
+        scroll.setWidgetResizable(False)
+        self.layout().addWidget(scroll)
 
         self.body.setMinimumHeight(50)
-        self.body.setSizePolicy(QSizePolicy.Policy.Preferred,
+        scroll.setSizePolicy(QSizePolicy.Policy.Preferred,
+                             QSizePolicy.Policy.Expanding)
+        self.body.setSizePolicy(QSizePolicy.Policy.Expanding,
                                 QSizePolicy.Policy.Expanding)
 
 

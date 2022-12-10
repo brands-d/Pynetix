@@ -21,6 +21,7 @@ class Plate:
     def __init__(self, file, dimensions=(8, 12)) -> None:
 
         self.metaData = {}
+        self.filePath = file
         self.dimensions = dimensions
         self.reactions = None
         self.time = None
@@ -48,7 +49,8 @@ class Plate:
         metaData = {}
         for md, info in Plate._md.items():
             raw = ws[info['loc']].value
-            groups = search(info['reg'], raw).groups()
+            result = search(info['reg'], raw)
+            groups = result.groups() if result is not None else ['', ]
 
             if md == 'Time':
                 hours = int(groups[0]) + 12*int(groups[3] == 'PM')
@@ -114,4 +116,3 @@ class Plate:
                         break
                 index = row * self.dimensions[1] + col
                 self.reactions.append(Reaction(self, values, index, units))
-    
