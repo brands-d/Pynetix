@@ -26,7 +26,7 @@ class Plate:
         self.filePath = str(file)
         self.dimensions = dimensions
         self.reactions = None
-        self.time = None
+        self.times = None
         self.timeUnits = None
         self.results = None
 
@@ -64,7 +64,7 @@ class Plate:
         _, ws = self._openWorkbook()
         self.metaData = self._parseMetaData(ws)
         valueUnits = self._parseValueUnits(ws)
-        self.time = self._parseTime(ws)
+        self.times = self._parseTime(ws)
         self._parseReactions(ws, valueUnits)
 
     def _parseMetaData(self, ws) -> None:
@@ -127,6 +127,7 @@ class Plate:
         self.reactions = []
 
         for row in range(self.dimensions[0]):
+            self.reactions.append([])
             for col in range(self.dimensions[1]):
                 cycle = 0
                 values = []
@@ -137,5 +138,4 @@ class Plate:
                         cycle += delta
                     else:
                         break
-                index = row * self.dimensions[1] + col
-                self.reactions.append(Reaction(self, values, index, units))
+                self.reactions[row].append(Reaction(self, values, row,col, units))

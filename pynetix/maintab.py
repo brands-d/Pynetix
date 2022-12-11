@@ -7,6 +7,7 @@ from pynetix import __project__
 from pynetix.models.plate import Plate
 from pynetix.widgets.filetreewidget import FileTreeWidget
 from pynetix.widgets.foldwidget import FoldWidget
+from pynetix.widgets.plotarea import PlotArea
 from pynetix.widgets.metadatawidget import MetaDataWidget
 from pynetix.widgets.sidebar import SideBar
 from pynetix.widgets.splitter import Splitter
@@ -57,6 +58,7 @@ class MainTab(QWidget):
             getLogger(__project__).error(f'{path} not a valid file.', 20)
         else:
             self.metaData.setPlate(self.plate)
+            self.plotarea.setPlate(self.plate)
             getLogger(__project__).info(f'Plate {path} opened successfully.')
 
     def _initLayout(self) -> None:
@@ -72,7 +74,7 @@ class MainTab(QWidget):
         self.splitter.setChildrenCollapsible(True)
 
     def _initPlotarea(self) -> None:
-        self.plotarea = QWidget()
+        self.plotarea = PlotArea()
         self.plotarea.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.splitter.addWidget(self.plotarea)

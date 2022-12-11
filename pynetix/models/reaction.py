@@ -2,17 +2,17 @@ from numpy import array, stack
 
 
 class Reaction:
-    def __init__(self, plate, values, index: int, units='OD') -> None:
+    def __init__(self, plate, values, row: int, col: int, units='OD') -> None:
         self.plate = plate
-        self.index = index
+        self.row = row
+        self.col = col
         self.values = array(values)
         self.valueUnits = units
 
     @property
     def position(self):
-        row = self.index // 12  # self.plate.dimensions[1]
-        row = chr(row + 65)
-        col = self.index % 12+1  # self.plate.dimensions[1]
+        row = chr(self.row + 65)
+        col = self.col % self.plate.dimensions[1]+1
 
         return f'{row}{col:d}'
 
@@ -25,8 +25,8 @@ class Reaction:
         return f'Absorbance / {self.valueUnits}'
 
     @property
-    def time(self):
-        return self.plate.time
+    def times(self):
+        return self.plate.times
 
     @property
     def timeUnits(self):
