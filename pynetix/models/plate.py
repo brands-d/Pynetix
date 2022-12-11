@@ -1,45 +1,67 @@
 from datetime import date, time
+from logging import getLogger
 from re import search
 
 from numpy import array
 from openpyxl import load_workbook
 
+from pynetix import __project__
 from pynetix.models.reaction import Reaction
 
 
 class Plate:
-    _md = {'User': {'loc': 'A3', 'reg': r'^User: (.*)$'},
-           'Path': {'loc': 'A4', 'reg': r'^Path: (.*)$'},
-           'Test ID': {'loc': 'A5', 'reg': r'^Test ID: (.*)$'},
-           'Test Name': {'loc': 'A6', 'reg': r'^Test Name: (.*)$'},
-           'Date': {'loc': 'A7', 'reg': r'^Date: (\d{1,2})/(\d{1,2})/(\d{4})$'},
-           'Time': {'loc': 'A8', 'reg': r'^Time: (\d{1,2}):(\d{1,2}):(\d{1,2}) ([A-Z]{2})$'},
-           'ID1': {'loc': 'A9', 'reg': r'^ID1: (.*)$'},
-           'ID2': {'loc': 'A10', 'reg': r'^ID2: (.*)$'},
-           'ID3': {'loc': 'A11', 'reg': r'^ID3: (.*)$'}}
+    _md = {'User': {'loc': 'A3', 'name': 'User', 'reg': fr'(.*)'},
+           'Path': {'loc': 'A4', 'name': 'Path', 'reg': r'(.*)'},
+           'Test ID': {'loc': 'A5', 'name': 'Test ID', 'reg': r'(.*)'},
+           'Test Name': {'loc': 'A6', 'name': 'Test Name', 'reg': r'(.*)'},
+           'Date': {'loc': 'A7', 'name': 'Date', 'reg': r'(\d{1,2})/(\d{1,2})/(\d{4})'},
+           'Time': {'loc': 'A8', 'name': 'Time', 'reg': r'(\d{1,2}):(\d{1,2}):(\d{1,2}) ([A-Z]{2})'},
+           'ID1': {'loc': 'A9', 'name': 'ID1', 'reg': r'(.*)'},
+           'ID2': {'loc': 'A10', 'name': 'ID2', 'reg': r'(.*)'},
+           'ID3': {'loc': 'A11', 'name': 'ID3', 'reg': r'(.*)'}}
 
     def __init__(self, file, dimensions=(8, 12)) -> None:
 
         self.metaData = {}
-        self.filePath = file
+        self.filePath = str(file)
         self.dimensions = dimensions
         self.reactions = None
         self.time = None
         self.timeUnits = None
         self.results = None
 
-        self._parseFile(file)
+        self._parseFile()
 
     @property
     def timeLabel(self):
         return f'Time t / {self.timeUnits}'
 
-    def _parseFile(self, file: str) -> None:
+    def changeMetaData(self, metaData: str, value: str) -> None:
         try:
-            ws = load_workbook(str(file)).active
+            wb, ws = self._openWorkbook()
+        except:
+            getLogger(__project__).error(f'Changing meta data failed. File not accessible anymore.', 20)
+
+        if metaData == 'Time':
+            pass
+        elif metaData == 'Date':
+            pass
+
+        ws[Plate._md[metaData]['loc']
+           ].value = f"{Plate._md[metaData]['name']}: {value}"
+        wb.save(self.filePath)
+        getLogger(__project__).info(f"Changed '{metaData}' to '{value}' successfully.")
+
+    def _openWorkbook(self):
+        try:
+            wb = load_workbook(self.filePath)
+            ws = wb.active
+            return wb, ws
         except:
             raise ValueError
 
+    def _parseFile(self) -> None:
+        _, ws = self._openWorkbook()
         self.metaData = self._parseMetaData(ws)
         valueUnits = self._parseValueUnits(ws)
         self.time = self._parseTime(ws)
@@ -49,7 +71,8 @@ class Plate:
         metaData = {}
         for md, info in Plate._md.items():
             raw = ws[info['loc']].value
-            result = search(info['reg'], raw)
+            reg = fr"^{info['name']}: {info['reg']}$"
+            result = search(reg, raw)
             groups = result.groups() if result is not None else ['', ]
 
             if md == 'Time':

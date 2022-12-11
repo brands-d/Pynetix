@@ -14,25 +14,35 @@ class MetaDataWidget(FoldWidget):
         self.plate = plate
 
         for item in self.items:
-            self.body.layout().removeWidget(item['edit'])
-            item['edit'].deleteLater()
-            self.body.layout().removeWidget(item['label'])
-            item['label'].deleteLater()
+            self._removeItem(item)
         self.items.clear()
 
         for i, metaData in enumerate(self.plate.metaData):
-            label = QLabel(metaData + ':  ')
-            label.setSizePolicy(QSizePolicy.Policy.Minimum,
-                                QSizePolicy.Policy.Preferred)
-            self.body.layout().addWidget(label, i, 0)
+            self._addItem(i, metaData)
 
-            edit = QLineEdit()
-            edit.setMinimumWidth(200)
-            edit.setSizePolicy(QSizePolicy.Policy.Expanding,
-                               QSizePolicy.Policy.Preferred)
-            edit.setText(str(self.plate.metaData[metaData]))
-            self.body.layout().addWidget(edit, i, 1)
-            self.items.append({'label': label, 'edit': edit})
+    def _addItem(self, i: int, metaData) -> None:
+        label = QLabel(metaData + ':  ')
+        label.setSizePolicy(QSizePolicy.Policy.Minimum,
+                            QSizePolicy.Policy.Preferred)
+        self.body.layout().addWidget(label, i, 0)
+
+        edit = QLineEdit()
+        edit.setMinimumWidth(200)
+        edit.setSizePolicy(QSizePolicy.Policy.Expanding,
+                           QSizePolicy.Policy.Preferred)
+        edit.setText(str(self.plate.metaData[metaData]))
+        # optional lambda variable necessary to change from pass
+        # by reference to pass by value
+        edit.textChanged.connect(
+            lambda v, m=metaData: self.plate.changeMetaData(m, v))
+        self.body.layout().addWidget(edit, i, 1)
+        self.items.append({'label': label, 'edit': edit})
+
+    def _removeItem(self, item) -> None:
+        self.body.layout().removeWidget(item['edit'])
+        item['edit'].deleteLater()
+        self.body.layout().removeWidget(item['label'])
+        item['label'].deleteLater()
 
     def _initBody(self, *args) -> None:
         body = QWidget()
