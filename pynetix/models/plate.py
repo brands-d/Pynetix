@@ -1,8 +1,7 @@
-from datetime import date, time
 from logging import getLogger
 from re import search
 
-from numpy import array
+from numpy import array, nan
 from openpyxl import load_workbook
 
 from pynetix import __project__
@@ -124,6 +123,8 @@ class Plate:
                 while True:
                     value = ws.cell(start_row+row+cycle, start_col+col).value
                     if value:
+                        if value in ['overflow']:
+                            value = nan
                         values.append(value)
                         cycle += delta
                     else:
