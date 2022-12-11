@@ -10,15 +10,15 @@ from pynetix.models.reaction import Reaction
 
 
 class Plate:
-    _md = {'User': {'loc': 'A3', 'name': 'User', 'reg': fr'(.*)'},
-           'Path': {'loc': 'A4', 'name': 'Path', 'reg': r'(.*)'},
-           'Test ID': {'loc': 'A5', 'name': 'Test ID', 'reg': r'(.*)'},
-           'Test Name': {'loc': 'A6', 'name': 'Test Name', 'reg': r'(.*)'},
-           'Date': {'loc': 'A7', 'name': 'Date', 'reg': r'(\d{1,2})/(\d{1,2})/(\d{4})'},
-           'Time': {'loc': 'A8', 'name': 'Time', 'reg': r'(\d{1,2}):(\d{1,2}):(\d{1,2}) ([A-Z]{2})'},
-           'ID1': {'loc': 'A9', 'name': 'ID1', 'reg': r'(.*)'},
-           'ID2': {'loc': 'A10', 'name': 'ID2', 'reg': r'(.*)'},
-           'ID3': {'loc': 'A11', 'name': 'ID3', 'reg': r'(.*)'}}
+    _md = {'User': {'loc': 'A3', 'name': 'User'},
+           'Path': {'loc': 'A4', 'name': 'Path'},
+           'Test ID': {'loc': 'A5', 'name': 'Test ID'},
+           'Test Name': {'loc': 'A6', 'name': 'Test Name'},
+           'Date': {'loc': 'A7', 'name': 'Date'},
+           'Time': {'loc': 'A8', 'name': 'Time'},
+           'ID1': {'loc': 'A9', 'name': 'ID1'},
+           'ID2': {'loc': 'A10', 'name': 'ID2'},
+           'ID3': {'loc': 'A11', 'name': 'ID3'}}
 
     def __init__(self, file, dimensions=(8, 12)) -> None:
 
@@ -40,7 +40,8 @@ class Plate:
         try:
             wb, ws = self._openWorkbook()
         except:
-            getLogger(__project__).error(f'Changing meta data failed. File not accessible anymore.', 20)
+            getLogger(__project__).error(
+                f'Changing meta data failed. File not accessible anymore.', 20)
 
         if metaData == 'Time':
             pass
@@ -50,7 +51,8 @@ class Plate:
         ws[Plate._md[metaData]['loc']
            ].value = f"{Plate._md[metaData]['name']}: {value}"
         wb.save(self.filePath)
-        getLogger(__project__).info(f"Changed '{metaData}' to '{value}' successfully.")
+        getLogger(__project__).info(
+            f"Changed '{metaData}' to '{value}' successfully.")
 
     def _openWorkbook(self):
         try:
@@ -71,22 +73,10 @@ class Plate:
         metaData = {}
         for md, info in Plate._md.items():
             raw = ws[info['loc']].value
-            reg = fr"^{info['name']}: {info['reg']}$"
+            reg = fr"^{info['name']}: (.*)$"
             result = search(reg, raw)
             groups = result.groups() if result is not None else ['', ]
-
-            if md == 'Time':
-                hours = int(groups[0]) + 12*int(groups[3] == 'PM')
-                minutes = int(groups[1])
-                seconds = int(groups[2])
-                value = time(hours, minutes, seconds)
-            elif md == 'Date':
-                day = int(groups[1])
-                month = int(groups[0])
-                year = int(groups[2])
-                value = date(year, month, day)
-            else:
-                value = groups[0]
+            value = groups[0]
 
             metaData.update({md: value})
 
@@ -138,4 +128,5 @@ class Plate:
                         cycle += delta
                     else:
                         break
-                self.reactions[row].append(Reaction(self, values, row,col, units))
+                self.reactions[row].append(
+                    Reaction(self, values, row, col, units))
