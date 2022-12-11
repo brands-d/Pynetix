@@ -1,15 +1,17 @@
 from PySide6.QtWidgets import QWidget, QGridLayout
-from pyqtgraph import plot, GraphicsLayoutWidget
+from pyqtgraph import GraphicsLayoutWidget, setConfigOption
 
+from pynetix.resources.resources import Resource
 
 class PlotArea(QWidget):
     def __init__(self) -> None:
         super().__init__()
 
         self.plots = []
-        self.view = GraphicsLayoutWidget()
+        self.view = None
         self.plate = None
 
+        self._initView()
         self._initLayout()
 
     def setPlate(self, plate):
@@ -30,7 +32,7 @@ class PlotArea(QWidget):
         reaction = self.plate.reactions[row][col]
         plotItem = self.getPlot(row, col)
         plotItem.clear()
-        plotItem.plot(reaction.times, reaction.values)
+        plotItem.plot(reaction.times, reaction.values, pen={'color': Resource.getColour('BLUE')})
 
     def _addPlot(self, row: int, col: int, last_row: bool, first_col: bool) -> None:
         item = self.view.addPlot(row, col, enableMenu=False)
@@ -40,6 +42,12 @@ class PlotArea(QWidget):
             item.getAxis('bottom').setStyle(showValues=True)
         if first_col:
             item.getAxis('left').setStyle(showValues=True)
+
+    def _initView(self):
+        setConfigOption('background', Resource.getColour('BLACK'))
+        setConfigOption('foreground', Resource.getColour('WHITE'))
+
+        self.view = GraphicsLayoutWidget()
 
     def _initLayout(self):
         layout = QGridLayout()

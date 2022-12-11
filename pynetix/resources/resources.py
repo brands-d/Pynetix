@@ -58,6 +58,10 @@ class Resource:
             raise ValueError
 
     @staticmethod
+    def getColour(colour: str) -> str:
+        return Resource.theme[colour]
+
+    @staticmethod
     def listThemes():
         availableThemes = []
         for file in listdir(str(Resource.themeDir)):
