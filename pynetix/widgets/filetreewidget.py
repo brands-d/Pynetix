@@ -59,7 +59,7 @@ class FileTreeWidget(FoldWidget):
                                 QSizePolicy.Policy.Expanding)
 
     def closeEvent(self, event) -> None:
-        QSettings().setValue('filetree/fileFilter', ['*.xlsx'])
+        QSettings().setValue('filetree/fileFilter', ['*.xlsx',])
         QSettings().setValue('filetree/activateFileFilter',
                              not self.model.nameFilterDisables())
         return super().closeEvent(event)
