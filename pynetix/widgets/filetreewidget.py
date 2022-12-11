@@ -5,7 +5,7 @@ from PySide6.QtCore import QSettings, Signal
 from PySide6.QtWidgets import QFileSystemModel, QTreeView, QSizePolicy
 
 from pynetix.widgets.foldwidget import FoldWidget
-from pynetix.other.lib import QBoolToBool, QListToList
+from pynetix.other.lib import QBoolToBool, QListToList, ListToQList
 
 
 class FileTreeWidget(FoldWidget):
@@ -59,7 +59,7 @@ class FileTreeWidget(FoldWidget):
                                 QSizePolicy.Policy.Expanding)
 
     def closeEvent(self, event) -> None:
-        QSettings().setValue('filetree/fileFilter', ['*.xlsx',])
+        QSettings().setValue('filetree/fileFilter', ListToQList(['*.xlsx',]))
         QSettings().setValue('filetree/activateFileFilter',
                              not self.model.nameFilterDisables())
         return super().closeEvent(event)

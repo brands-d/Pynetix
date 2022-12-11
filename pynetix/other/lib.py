@@ -13,3 +13,11 @@ def QListToList(value: str):
         return search(r'@List\((.*)\)$', value).groups()[0].split()
     else:
         return value
+
+
+def ListToQList(values):
+    out = '@List('
+    for value in values:
+        out += str(value) + ' '
+    out = out[:-1] + ')'
+    return out
