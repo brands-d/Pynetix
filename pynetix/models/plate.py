@@ -63,14 +63,25 @@ class Plate:
 
     def _parseFile(self) -> None:
         _, ws = self._openWorkbook()
-        self.metaData = self._parseMetaData(ws)
-        valueUnits = self._parseValueUnits(ws)
-        self.times = self._parseTime(ws)
-        self._parseReactions(ws, valueUnits)
+        version = self._checkFileVersion(ws)
+        self.metaData = self._parseMetaData(ws, version=version)
+        valueUnits = self._parseValueUnits(ws, version=version)
+        self.times = self._parseTime(ws, version=version)
+        self._parseReactions(ws, valueUnits, version=version)
 
-    def _parseMetaData(self, ws) -> None:
+    def _checkFileVersion(self, ws) -> str:
+        if ws['A10'].value is None:
+            return 'new'
+        else:
+            return 'old'
+
+    def _parseMetaData(self, ws, version='old') -> None:
         metaData = {}
         for md, info in Plate._md.items():
+
+            if version == 'new' and md[:2] == 'ID':
+                continue
+
             raw = ws[info['loc']].value
             reg = fr"^{info['name']}: (.*)$"
             result = search(reg, raw)
@@ -81,12 +92,13 @@ class Plate:
 
         return metaData
 
-    def _parseValueUnits(self, ws) -> str:
-        return search(r'as (.*)$', ws['D12'].value).groups()[0]
+    def _parseValueUnits(self, ws, version='old') -> str:
+        loc = 'D12' if version == 'old' else 'D9'
+        return search(r'as (.*)$', ws[loc].value).groups()[0]
 
-    def _parseTime(self, ws):
+    def _parseTime(self, ws, version='old'):
         reg = r'Cycle \d* \((.* h)? ?(.* min)? ?(.* s)?\)'
-        i = 16
+        i = 16 if version == 'old' else 13
         delta = 4 + self.dimensions[0]
         times = []
 
@@ -109,8 +121,8 @@ class Plate:
 
         return array(times)
 
-    def _parseReactions(self, ws, units: str) -> None:
-        start_row = 19
+    def _parseReactions(self, ws, units: str, version='old') -> None:
+        start_row = 19 if version == 'old' else 16
         start_col = 2
         delta = 4 + self.dimensions[0]
         self.reactions = []
