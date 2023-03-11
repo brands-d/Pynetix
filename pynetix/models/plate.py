@@ -6,23 +6,15 @@ from openpyxl import load_workbook
 
 from pynetix import __project__
 from pynetix.models.reaction import Reaction
+from pynetix.other.fileformats import Standard, New
 
 
 class Plate:
-    _md = {'User': {'loc': 'A3', 'name': 'User'},
-           'Path': {'loc': 'A4', 'name': 'Path'},
-           'Test ID': {'loc': 'A5', 'name': 'Test ID'},
-           'Test Name': {'loc': 'A6', 'name': 'Test Name'},
-           'Date': {'loc': 'A7', 'name': 'Date'},
-           'Time': {'loc': 'A8', 'name': 'Time'},
-           'ID1': {'loc': 'A9', 'name': 'ID1'},
-           'ID2': {'loc': 'A10', 'name': 'ID2'},
-           'ID3': {'loc': 'A11', 'name': 'ID3'}}
-
     def __init__(self, file, dimensions=(8, 12)) -> None:
 
         self.metaData = {}
         self.filePath = str(file)
+        self.format = None
         self.dimensions = dimensions
         self.reactions = None
         self.times = None
@@ -47,8 +39,8 @@ class Plate:
         elif metaData == 'Date':
             pass
 
-        ws[Plate._md[metaData]['loc']
-           ].value = f"{Plate._md[metaData]['name']}: {value}"
+        ws[self.format.metaData[metaData]['loc']
+           ].value = f"{self.format.metaData[metaData]['name']}: {value}"
         wb.save(self.filePath)
         getLogger(__project__).info(
             f"Changed '{metaData}' to '{value}' successfully.")
@@ -63,25 +55,21 @@ class Plate:
 
     def _parseFile(self) -> None:
         _, ws = self._openWorkbook()
-        version = self._checkFileVersion(ws)
-        self.metaData = self._parseMetaData(ws, version=version)
-        valueUnits = self._parseValueUnits(ws, version=version)
-        self.times = self._parseTime(ws, version=version)
-        self._parseReactions(ws, valueUnits, version=version)
+        self._checkFileFormat(ws)
+        self.metaData = self._parseMetaData(ws)
+        valueUnits = self._parseValueUnits(ws)
+        self.times = self._parseTime(ws)
+        self._parseReactions(ws, valueUnits)
 
-    def _checkFileVersion(self, ws) -> str:
+    def _checkFileFormat(self, ws) -> str:
         if ws['A10'].value is None:
-            return 'new'
+            self.format = New
         else:
-            return 'old'
+            self.format = Standard
 
-    def _parseMetaData(self, ws, version='old') -> None:
+    def _parseMetaData(self, ws) -> None:
         metaData = {}
-        for md, info in Plate._md.items():
-
-            if version == 'new' and md[:2] == 'ID':
-                continue
-
+        for md, info in self.format.metaData.items():
             raw = ws[info['loc']].value
             reg = fr"^{info['name']}: (.*)$"
             result = search(reg, raw)
@@ -92,14 +80,13 @@ class Plate:
 
         return metaData
 
-    def _parseValueUnits(self, ws, version='old') -> str:
-        loc = 'D12' if version == 'old' else 'D9'
-        return search(r'as (.*)$', ws[loc].value).groups()[0]
+    def _parseValueUnits(self, ws) -> str:
+        return search(r'as (.*)$', ws[self.format.valueUnits].value).groups()[0]
 
-    def _parseTime(self, ws, version='old'):
+    def _parseTime(self, ws):
         reg = r'Cycle \d* \((.* h)? ?(.* min)? ?(.* s)?\)'
-        i = 16 if version == 'old' else 13
         delta = 4 + self.dimensions[0]
+        i = self.format.timeLoc
         times = []
 
         while True:
@@ -121,9 +108,7 @@ class Plate:
 
         return array(times)
 
-    def _parseReactions(self, ws, units: str, version='old') -> None:
-        start_row = 19 if version == 'old' else 16
-        start_col = 2
+    def _parseReactions(self, ws, units: str) -> None:
         delta = 4 + self.dimensions[0]
         self.reactions = []
 
@@ -133,7 +118,8 @@ class Plate:
                 cycle = 0
                 values = []
                 while True:
-                    value = ws.cell(start_row+row+cycle, start_col+col).value
+                    value = ws.cell(self.format.startRow+row+cycle,
+                                    self.format.startCol+col).value
                     if value:
                         if value in ['overflow']:
                             value = nan
