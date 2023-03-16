@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from PySide6.QtCore import QSettings, Qt
+from PySide6.QtCore import QSettings, Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout, QSizePolicy, QWidget
 
 from pynetix import __project__
@@ -12,8 +12,12 @@ from pynetix.widgets.metadatawidget import MetaDataWidget
 from pynetix.widgets.sidebar import SideBar
 from pynetix.widgets.splitter import Splitter
 
+from pyqtgraph import PlotItem
+
 
 class MainTab(QWidget):
+    plotClicked = Signal(PlotItem)
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -78,6 +82,8 @@ class MainTab(QWidget):
         self.plotarea.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.splitter.addWidget(self.plotarea)
+
+        self.plotarea.plotClicked.connect(self.plotClicked.emit)
 
     def _initSidebar(self) -> None:
         self.sidebar = SideBar()

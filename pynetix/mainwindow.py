@@ -1,13 +1,17 @@
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QSettings
-from PySide6.QtWidgets import (QMainWindow, QStatusBar, QVBoxLayout, QMessageBox,
-                               QWidget, QMenu, QTabBar, QApplication)
+from PySide6.QtWidgets import (QMainWindow, QStatusBar, QVBoxLayout,
+                               QMessageBox, QWidget, QMenu, QTabBar,
+                               QApplication)
+
+from pyqtgraph import PlotItem
 
 from pynetix import __project__
 from pynetix.resources.resources import Resource
 from pynetix.maintab import MainTab
 from pynetix.preferencestab import PreferencesTab
 from pynetix.widgets.tabwidget import TabWidget
+from pynetix.plottab import PlotTab
 
 
 class MainWindow(QMainWindow):
@@ -22,6 +26,7 @@ class MainWindow(QMainWindow):
         self.mainTab = None
         self.layout = None
         self.preferences = None
+        self.plotTabs = []
         self.actions = {}
 
         self._initLayout()
@@ -38,8 +43,12 @@ class MainWindow(QMainWindow):
         self.resize(settings.value('mainwindow/size'))
 
     def removeTab(self, i: int) -> None:
-        if isinstance(self.tabwidget.widget(i), PreferencesTab):
+        tab = self.tabwidget.widget(i)
+        if isinstance(tab, PreferencesTab):
             self.preferences = None
+
+        elif isinstance(tab, PlotTab):
+            self.plotTabs.remove(tab)
 
         self.tabwidget.removeTab(i)
 
@@ -55,6 +64,22 @@ class MainWindow(QMainWindow):
         self.tabwidget.setCurrentWidget(self.preferences)
         self.preferences.settingChanged.connect(self.mainTab.settingChanged)
 
+    def openPlot(self, plotItem: PlotItem) -> None:
+        plotAlreadyOpen = False
+        for plotTab in self.plotTabs:
+            if plotTab.plotItem == plotItem:
+                plotAlreadyOpen = True
+                break
+
+        if not plotAlreadyOpen:
+            plotTab = PlotTab(plotItem)
+            pos = self.mainTab.plotarea.getCoordinates(plotItem)
+            title = f'Row: {pos[0] + 1:d}, Col: {pos[1] + 1:d}'
+            self.tabwidget.addTab(plotTab, title)
+            self.plotTabs.append(plotTab)
+
+        self.tabwidget.setCurrentWidget(plotTab)
+
     def _initLayout(self) -> None:
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -69,6 +94,8 @@ class MainWindow(QMainWindow):
         self.tabwidget.setTabsClosable(True)
         self.tabwidget.tabBar().tabCloseRequested.connect(self.removeTab)
         self.tabwidget.addTab(self.mainTab, 'Main Tab')
+
+        self.mainTab.plotClicked.connect(self.openPlot)
 
         # hide the close button on first tab to make uncloseable
         if (button := self.tabwidget.tabBar().tabButton(0, QTabBar.ButtonPosition.LeftSide)) is not None:
