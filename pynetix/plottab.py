@@ -31,7 +31,11 @@ class PlotTab(QWidget):
         self.calcAngles()
 
     def hoverEvent(self, item, points, event):
-        xMouse = event.pos().x()
+        try:
+            xMouse = event.pos().x()
+        except AttributeError:
+            return
+        
         index = closestValue(xMouse, self.data[0])
 
         if self.dynamicHoverLine is None:
