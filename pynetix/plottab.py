@@ -35,7 +35,7 @@ class PlotTab(QWidget):
             xMouse = event.pos().x()
         except AttributeError:
             return
-        
+
         index = closestValue(xMouse, self.data[0])
 
         if self.dynamicHoverLine is None:
@@ -48,7 +48,8 @@ class PlotTab(QWidget):
             f'Dynamic Slope: {self.slopes[index]:.3e}')
 
     def clickEvent(self, event):
-        xMouse = self.plotItem.getViewBox().mapSceneToView(event.scenePos()).x()
+        view = self.plotItem.getViewBox()
+        xMouse = view.mapSceneToView(event.scenePos()).x()
         index = closestValue(xMouse, self.data[0])
 
         if self.staticHoverLine is None:
@@ -77,11 +78,11 @@ class PlotTab(QWidget):
         setConfigOption('foreground', Resource.getColour('WHITE'))
 
         self.plot = PlotWidget()
+        pen = {'color': Resource.getColour('BLUE')}
+        brush = mkBrush(Resource.getColour('BLUE'))
         self.plotItem = ScatterPlotItem(*self.data,
-                                        pen={
-                                            'color': Resource.getColour('BLUE')},
-                                        brush=mkBrush(
-                                            Resource.getColour('BLUE')),
+                                        pen=pen,
+                                        brush=brush,
                                         hoverable=True,
                                         symbol='x',
                                         size=8)
@@ -90,15 +91,15 @@ class PlotTab(QWidget):
         self.plotItem.scene().sigMouseClicked.connect(self.clickEvent)
 
     def _initDynamicHoverLine(self):
+        pen = {'color': Resource.getColour('ORANGE')+'b3', 'width': 3}
         self.dynamicHoverLine = InfiniteLine(movable=False,
-                                             pen={'color': Resource.getColour('ORANGE')+'b3',
-                                                  'width': 3})
+                                             pen=pen)
         self.plot.addItem(self.dynamicHoverLine)
 
     def _initStaticHoverLine(self):
+        pen = {'color': Resource.getColour('RED'), 'width': 3}
         self.staticHoverLine = InfiniteLine(movable=False,
-                                            pen={'color': Resource.getColour('RED'),
-                                                 'width': 3})
+                                            pen=pen)
         self.plot.addItem(self.staticHoverLine)
 
     def _initDynamicSlopeDisplay(self):

@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
     def openPlot(self, plotItem: PlotItem) -> None:
         plotAlreadyOpen = False
         for plotTab in self.plotTabs:
-            if plotTab.origPlotItem == plotItem:
+            if plotTab.orgPlotItem == plotItem:
                 plotAlreadyOpen = True
                 break
 
@@ -98,9 +98,12 @@ class MainWindow(QMainWindow):
         self.mainTab.plotClicked.connect(self.openPlot)
 
         # hide the close button on first tab to make uncloseable
-        if (button := self.tabwidget.tabBar().tabButton(0, QTabBar.ButtonPosition.LeftSide)) is not None:
+        bar = self.tabwidget.tabBar()
+        left = bar.tabButton(0, QTabBar.ButtonPosition.LeftSide)
+        right = bar.tabButton(0, QTabBar.ButtonPosition.RightSide)
+        if (button := left) is not None:
             button.hide()
-        elif (button := self.tabwidget.tabBar().tabButton(0, QTabBar.ButtonPosition.RightSide)) is not None:
+        elif (button := right) is not None:
             button.hide()
 
         self.layout.addWidget(self.tabwidget)

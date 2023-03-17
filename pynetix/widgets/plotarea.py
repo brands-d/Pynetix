@@ -34,7 +34,7 @@ class PlotArea(QWidget):
     def getPlot(self, row: int, col: int):
         return self.view.getItem(row, col)
 
-    def getCoordinates(self, item: PlotItem) -> (int, int):
+    def getCoordinates(self, item: PlotItem):
         i = self.plots.index(item)
         row = i // self.plate.dimensions[1]
         col = i % self.plate.dimensions[1]
@@ -59,7 +59,8 @@ class PlotArea(QWidget):
         plotItem.plot(reaction.times, reaction.values, pen={
                       'color': Resource.getColour('BLUE')})
 
-    def _addPlot(self, row: int, col: int, last_row: bool, first_col: bool) -> None:
+    def _addPlot(self, row: int, col: int,
+                 last_row: bool, first_col: bool) -> None:
         item = self.view.addPlot(row, col, enableMenu=False)
         item.showAxes((True, False, False, True), showValues=False)
         self.plots.append(item)

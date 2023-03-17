@@ -55,7 +55,8 @@ class App(QApplication):
             Resource.updateColourScheme(theme)
         except ValueError:
             print(
-                f'Chosen theme "{theme}" does not exist. Fallback to "default".')
+                (f'Chosen theme "{theme}" does not exist.'
+                 ' Fallback to "default".'))
             Resource.updateColourScheme('default')
             QSettings().setValue('colour/theme', 'default')
 
