@@ -1,5 +1,7 @@
 from re import search
 
+from numpy import argmin, array
+
 
 def QBoolToBool(value: str):
     if isinstance(value, str):
@@ -21,3 +23,7 @@ def ListToQList(values):
         out += str(value) + ' '
     out = out[:-1] + ')'
     return out
+
+
+def closestValue(target, list_):
+    return argmin(abs(array(list_)-target))
