@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
     def openPlot(self, plotItem: PlotItem) -> None:
         plotAlreadyOpen = False
         for plotTab in self.plotTabs:
-            if plotTab.orgPlotItem == plotItem:
+            if plotTab.origPlotItem == plotItem:
                 plotAlreadyOpen = True
                 break
 
